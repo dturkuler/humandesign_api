@@ -1,158 +1,444 @@
-# Human Design Project
+# Human Design API
 
-## Overview
-This project is a collection of Python scripts and modules that provide functionalities related to Human Design, a system of knowledge that combines astrology, kabbalah, and the I Ching to map the energy flows within a person. The project includes functionalities for geocoding, calculating Human Design features, and providing an API for these calculations.
+Welcome to the Human Design API! This project provides a robust and scalable API for calculating various Human Design features based on birth data. Built with FastAPI and leveraging powerful astrological and geographical libraries, it offers a comprehensive solution for integrating Human Design analytics into your applications.
 
-## Project Structure
+## Project Overview
 
-- **api_.py**: Flask API for calculating Human Design features.
-- **convertJSON.py**: Functions to convert data into JSON format.
-- **geocode.py**: Functions for geocoding and calculating distances.
-- **hd_constants.py**: Constants used in Human Design calculations.
-- **hd_features.py**: Classes and functions for calculating Human Design features.
-- **mcp_server.py**: MCP server for processing Human Design calculations.
+The Human Design API is a Python-based service designed to compute intricate Human Design charts. It takes birth details (year, month, day, hour, minute, second, and place) as input and returns a detailed JSON response including energy type, inner authority, incarnation cross, profile, active/inactive chakras, split definition, and planetary gate information.
 
-## File Descriptions
+The API is containerized using Docker, ensuring consistent and isolated environments for development and deployment. Docker Compose is used for easy orchestration of the API service.
 
-### api_.py
-This file contains the Flask API for calculating Human Design features.
+### Key Features:
 
-#### Functions
-- **calculate_hd()**: Calculates Human Design features based on the provided input.
+*   **FastAPI Backend**: High-performance Python web framework for building APIs.
+*   **Human Design Calculations**: Utilizes `pyswisseph` for precise astrological calculations and `geopy` for geocoding and timezone determination.
+*   **Comprehensive Output**: Provides detailed Human Design chart information, including energy type, inner authority, incarnation cross, profile, active/inactive chakras, split definition, and planetary gate data.
+*   **Dockerized Deployment**: Easy to set up and deploy using Docker and Docker Compose.
+*   **Authentication**: API token-based authentication for secure access.
 
-### convertJSON.py
-This file contains functions to convert data into JSON format.
+## Installation and Setup
 
-#### Functions
-- **general(data)**: Converts general data into JSON format.
-- **gatesJSON(data, details=False)**: Converts gate data into JSON format.
-- **channelsJSON(data, details=False)**: Converts channel data into JSON format.
+To get the Human Design API up and running, follow these steps:
 
-### geocode.py
-This file contains functions for geocoding and calculating distances.
+### Prerequisites
 
-#### Classes
-- **Location**: Data class for storing location information.
+*   **Docker**: Ensure Docker is installed and running on your system. You can download it from [Docker's official website](https://www.docker.com/products/docker-desktop).
+*   **Docker Compose**: Docker Compose is usually bundled with Docker Desktop. Verify its installation by running `docker-compose --version` in your terminal.
 
-#### Functions
-- **get_latitude_longitude(place: str) -> Tuple[Optional[float], Optional[float]]**: Retrieves latitude and longitude for a given place.
-- **get_address(latitude: float, longitude: float) -> Optional[str]**: Retrieves address for given latitude and longitude.
-- **batch_geocode(places: List[str]) -> List[Location]**: Geocodes a list of places.
-- **calculate_distance(place1: str, place2: str) -> Optional[float]**: Calculates the distance between two places.
+### Steps
 
-### hd_constants.py
-This file contains constants used in Human Design calculations.
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/your-repo/humandesign_v1.git
+    cd humandesign_v1
+    ```
 
-#### Constants
-- **SWE_PLANET_DICT**: Dictionary of planets and their corresponding indices.
-- **GATES_CHAKRA_DICT**: Dictionary of gates and their corresponding chakras.
-- **CHANNEL_MEANING_DICT**: Dictionary of channel meanings.
-- **IC_CROSS_TYP**: Dictionary of IC cross types.
-- **penta_dict**: Dictionary of penta types.
-- **circuit_typ_dict**: Dictionary of circuit types.
-- **circuit_group_typ_dict**: Dictionary of circuit group types.
-- **awareness_stream_dict**: Dictionary of awareness stream types.
-- **awareness_stream_group_dict**: Dictionary of awareness stream group types.
+2.  **Environment Variables**:
+    Create a `.env` file in the root directory of the project based on the `.env_example` file. This file will store your API token.
 
-### hd_features.py
-This file contains classes and functions for calculating Human Design features.
+    ```
+    HD_API_TOKEN=your_secret_token_here
+    ```
+    Replace `your_secret_token_here` with a strong, unique token.
 
-#### Classes
-- **hd_features**: Class for calculating Human Design features.
-- **hd_composite**: Class for calculating composite Human Design features.
+3.  **Build and Run with Docker Compose**:
+    Navigate to the project root directory in your terminal and run:
 
-#### Functions
-- **get_utc_offset_from_tz(timestamp, zone)**: Retrieves UTC offset for a given timezone.
-- **timestamp_to_juldate(self, *time_stamp)**: Converts timestamp to Julian date.
-- **calc_create_date(self, jdut)**: Calculates creation date from Julian date.
-- **date_to_gate(self, jdut, label)**: Converts date to gate.
-- **birth_creat_date_to_gate(self, *time_stamp)**: Converts birth creation date to gate.
-- **day_chart(self, *time_stamp)**: Generates day chart.
-- **get_inc_cross(date_to_gate_dict)**: Retrieves incidence cross.
-- **get_profile(date_to_gate_dict)**: Retrieves profile.
-- **get_variables(date_to_gate_dict)**: Retrieves variables.
-- **is_connected(active_channels_dict, *args)**: Checks if channels are connected.
-- **get_auth(active_chakras, active_channels_dict)**: Retrieves authentication.
-- **get_typ_old(active_channels_dict, active_chakras)**: Retrieves type (old method).
-- **get_typ(active_channels_dict, active_chakras)**: Retrieves type.
-- **get_component(active_channels_dict, chakra)**: Retrieves component.
-- **get_channels_and_active_chakras(date_to_gate_dict, meaning=False)**: Retrieves channels and active chakras.
-- **get_split(active_channels_dict, active_chakras)**: Retrieves split.
-- **calc_full_gates_chakra_dict(gates_chakra_dict)**: Calculates full gates chakra dictionary.
-- **calc_full_channel_meaning_dict()**: Calculates full channel meaning dictionary.
-- **chakra_connection_list(chakra_1, chakra_2)**: Retrieves chakra connection list.
-- **get_full_chakra_connect_dict()**: Retrieves full chakra connection dictionary.
-- **calc_single_hd_features(timestamp, report=False, channel_meaning=False, day_chart_only=False)**: Calculates single Human Design features.
-- **unpack_single_features(single_result)**: Unpacks single features.
-- **get_timestamp_list(start_date, end_date, percentage, time_unit, intervall)**: Retrieves timestamp list.
-- **calc_mult_hd_features(start_date, end_date, percentage, time_unit, intervall, num_cpu)**: Calculates multiple Human Design features.
-- **unpack_mult_features(result, full=True)**: Unpacks multiple features.
-- **get_single_hd_features(persons_dict, key, feature)**: Retrieves single Human Design features.
-- **composite_chakras_channels(persons_dict, identity, other_person)**: Retrieves composite chakras and channels.
-- **get_composite_combinations(persons_dict)**: Retrieves composite combinations.
-- **get_penta(persons_dict, report=False)**: Retrieves penta.
+    ```bash
+    docker-compose up --build -d
+    ```
+    *   `--build`: This flag tells Docker Compose to build the images before starting containers. This is necessary for the first run or after any changes to the `Dockerfile` or `requirements.txt`.
+    *   `-d`: This flag runs the containers in detached mode, meaning they will run in the background.
 
-### mcp_server.py
-This file contains the MCP server for processing Human Design calculations.
+4.  **Verify Installation**:
+    Once the containers are up, the API should be accessible at `http://localhost:9021`. You can verify its status by checking your Docker Desktop dashboard or by running:
 
-#### Classes
-- **HumanDesignMCPServer**: Class for the MCP server.
+    ```bash
+    docker ps
+    ```
+    You should see a container named `humandesignapi` running.
 
-#### Functions
-- **setup_logging(self)**: Sets up logging.
-- **validate_input_parameters(self, request_args: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], Optional[Tuple[Dict[str, Any], int]]]**: Validates input parameters.
-- **process_geocoding_timezone(self, birth_time: Tuple[int, ...], birth_place: str) -> Tuple[Optional[float], Optional[float], Optional[str], Optional[Tuple[Dict[str, Any], int]]]**: Processes geocoding and timezone.
-- **calculate_hd_features(self, timestamp: Tuple[int, ...]) -> Tuple[Optional[Any], Optional[Tuple[Dict[str, Any], int]]]**: Calculates Human Design features.
-- **format_output_data(self, single_result: Any) -> Tuple[Optional[Dict[str, Any]], Optional[Tuple[Dict[str, Any], int]]]**: Formats output data.
-- **calculate_hd_wrapper(self)**: Wrapper for calculating Human Design features.
+## Folder Structure
 
-## Usage
-To use the project, you can run the Flask API in `api_.py` and make requests to the `/calculate` endpoint. The MCP server in `mcp_server.py` can be used to process Human Design calculations.
+The project is organized as follows:
 
-## Testing the API
-
-### Setting Up the Environment
-1. Clone the repository.
-2. Install the required packages using `pip install -r requirements.txt`.
-
-### Running the API
-1. Run the Flask API using `python api_.py`.
-2. The API will be available at `http://127.0.0.1:5000/`.
-
-### Making Sample Requests
-You can use tools like `curl` or Postman to make requests to the `/calculate` endpoint.
-
-#### Using `curl`
-```bash
-curl -X GET "http://127.0.0.1:5000/calculate?year=1990&month=1&day=1&hour=0&minute=0&second=0&tz=UTC&place=New%20York"
+```
+.
+├── _favicon.ico
+├── .env_example
+├── .gitignore
+├── api.py
+├── convertJSON.py
+├── docker-compose.yml
+├── Dockerfile
+├── geocode.py
+├── hd_constants.py
+├── hd_features.py
+├── LICENSE
+├── README.mdx
+├── requirements.txt
+└── static/
+    └── favicon.ico
 ```
 
-#### Using Postman
-1. Open Postman.
-2. Create a new GET request.
-3. Set the URL to `http://127.0.0.1:5000/calculate`.
-4. Add query parameters:
-   - `year`: 1990
-   - `month`: 1
-   - `day`: 1
-   - `hour`: 0
-   - `minute`: 0
-   - `second`: 0
-   - `tz`: UTC
-   - `place`: New York
-5. Send the request and view the response.
+*   **`api.py`**: The main FastAPI application. It defines the API endpoints, handles request parsing, calls the Human Design calculation logic, and formats the response.
+*   **`convertJSON.py`**: Contains utility functions for converting raw Human Design calculation results into a structured JSON format for the API response. It also includes helper functions for mapping incarnation crosses, profiles, and channels to their descriptive names.
+*   **`Dockerfile`**: Defines the Docker image for the API, specifying the base Python image, dependencies, and application setup.
+*   **`docker-compose.yml`**: Orchestrates the Docker containers, defining the `humandesign-api` service, port mappings, and environment variables.
+*   **`geocode.py`**: Provides functions for geocoding (converting place names to latitude and longitude) and reverse geocoding, used to determine the correct timezone for birth locations.
+*   **`hd_constants.py`**: Stores all the constant values, mappings, and databases required for Human Design calculations, such as planetary codes, I Ging circle, chakra definitions, incarnation cross types, profile names, and channel meanings.
+*   **`hd_features.py`**: Contains the core logic for Human Design calculations. This includes functions for converting timestamps to Julian dates, calculating creation dates, mapping planetary positions to gates, lines, colors, tones, and bases, and determining energy types, inner authorities, incarnation crosses, profiles, active chakras, and splits.
+*   **`requirements.txt`**: Lists all Python dependencies required by the project.
+*   **`LICENSE`**: The license file for the project.
+*   **`README.mdx`**: This markdown file, providing an overview, setup instructions, and documentation for the project.
+*   **`.env_example`**: An example file for environment variables, specifically for the `HD_API_TOKEN`.
+*   **`.gitignore`**: Specifies intentionally untracked files that Git should ignore.
+*   **`static/`**: Directory for static assets, currently containing `favicon.ico`.
 
-## Requirements
-- Python 3.8 or higher
-- Flask
-- Geopy
-- NumPy
+## API Usage
 
-## Installation
-1. Clone the repository.
-2. Install the required packages using `pip install -r requirements.txt`.
-3. Run the Flask API using `python api_.py`.
-4. Run the MCP server using `python mcp_server.py`.
+The Human Design API provides a single endpoint for calculating Human Design features.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### `GET /calculate`
+
+Calculates Human Design features based on birth information.
+
+#### Parameters
+
+| Name     | Type    | Description                                     | Required |
+| :------- | :------ | :---------------------------------------------- | :------- |
+| `year`   | `integer` | Birth year (e.g., `1990`)                       | Yes      |
+| `month`  | `integer` | Birth month (e.g., `7` for July)                | Yes      |
+| `day`    | `integer` | Birth day (e.g., `15`)                          | Yes      |
+| `hour`   | `integer` | Birth hour (24-hour format, e.g., `14` for 2 PM) | Yes      |
+| `minute` | `integer` | Birth minute (e.g., `30`)                       | Yes      |
+| `second` | `integer` | Birth second (optional, default `0`)            | No       |
+| `place`  | `string`  | Birth place (city, country, e.g., `London, UK`) | Yes      |
+
+#### Authentication
+
+This endpoint requires an API token passed in the `Authorization` header as a Bearer token.
+
+`Authorization: Bearer your_secret_token_here`
+
+#### Example Request
+
+```bash
+curl -X GET "http://localhost:9021/calculate?year=1990&month=7&day=15&hour=14&minute=30&place=London%2C%20UK" \
+     -H "Authorization: Bearer your_secret_token_here"
+```
+
+#### Example Response
+
+```json
+{
+  "general": {
+    "birth_date": "(1990, 7, 15, 14, 30, 0)",
+    "create_date": "(1990, 4, 20, 17, 2, 20.0)",
+    "energie_type": "MANIFESTING GENERATOR",
+    "inner_authority": "Sacral",
+    "inc_cross": "The Right Angle Cross of the Sleeping Phoenix (2)",
+    "profile": "2/4: Hermit Opportunist",
+    "defined_centers": [
+      "Head",
+      "Anja",
+      "Throat",
+      "G_Center",
+      "Sacral",
+      "Spleen",
+      "Root"
+    ],
+    "undefined_centers": [
+      "SolarPlexus",
+      "Heart"
+    ],
+    "split": "Split Definition",
+    "variables": {
+      "right_up": "right",
+      "right_down": "left",
+      "left_up": "right",
+      "left_down": "right"
+    }
+  },
+  "gates": {
+    "prs": {
+      "Planets": [
+        {
+          "Planet": "Sun",
+          "Lon": 120.98,
+          "Gate": 20,
+          "Line": 2,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Earth",
+          "Lon": 300.98,
+          "Gate": 34,
+          "Line": 2,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Moon",
+          "Lon": 270.0,
+          "Gate": 58,
+          "Line": 6,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "North_Node",
+          "Lon": 29.0,
+          "Gate": 49,
+          "Line": 6,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "South_Node",
+          "Lon": 209.0,
+          "Gate": 4,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Mercury",
+          "Lon": 100.0,
+          "Gate": 16,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Venus",
+          "Lon": 110.0,
+          "Gate": 35,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Mars",
+          "Lon": 180.0,
+          "Gate": 13,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Jupiter",
+          "Lon": 250.0,
+          "Gate": 30,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Saturn",
+          "Lon": 330.0,
+          "Gate": 41,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Uranus",
+          "Lon": 50.0,
+          "Gate": 25,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Neptune",
+          "Lon": 70.0,
+          "Gate": 17,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Pluto",
+          "Lon": 90.0,
+          "Gate": 21,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        }
+      ]
+    },
+    "des": {
+      "Planets": [
+        {
+          "Planet": "Sun",
+          "Lon": 300.98,
+          "Gate": 34,
+          "Line": 4,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Earth",
+          "Lon": 120.98,
+          "Gate": 20,
+          "Line": 4,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Moon",
+          "Lon": 270.0,
+          "Gate": 58,
+          "Line": 6,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "North_Node",
+          "Lon": 29.0,
+          "Gate": 49,
+          "Line": 6,
+          "Color": 6,
+          "Tone": 6,
+          "Base": 5,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "South_Node",
+          "Lon": 209.0,
+          "Gate": 4,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Mercury",
+          "Lon": 100.0,
+          "Gate": 16,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Venus",
+          "Lon": 110.0,
+          "Gate": 35,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Mars",
+          "Lon": 180.0,
+          "Gate": 13,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Jupiter",
+          "Lon": 250.0,
+          "Gate": 30,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Saturn",
+          "Lon": 330.0,
+          "Gate": 41,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Uranus",
+          "Lon": 50.0,
+          "Gate": 25,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Neptune",
+          "Lon": 70.0,
+          "Gate": 17,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        },
+        {
+          "Planet": "Pluto",
+          "Lon": 90.0,
+          "Gate": 21,
+          "Line": 1,
+          "Color": 1,
+          "Tone": 1,
+          "Base": 4,
+          "Ch_Gate": 0
+        }
+      ]
+    }
+  },
+  "channels": {
+    "Channels": [
+      {
+        "channel": "20/34: The Channel of Charisma (A Design of Thoughts Becoming Deeds)"
+      },
+      {
+        "channel": "20/57: The Channel of the Brainwave (A Design of Penetrating Awareness)"
+      }
+    ]
+  }
+}
+```

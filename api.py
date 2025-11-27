@@ -85,7 +85,9 @@ def calculate_hd(
             "inner_authority": single_result[1],
             "inc_cross": single_result[2],
             "profile": single_result[4],
+#            "active_chakras": [hd_constants.CHAKRA_NAMES_MAP.get(chakra, chakra) for chakra in single_result[7]],
             "active_chakras": single_result[7],
+            "inactive_chakras": set(hd_constants.CHAKRA_LIST) - set(single_result[7]),
             "split": "{}".format(single_result[5]),
             "variables": {
                 'right_up': 'right',

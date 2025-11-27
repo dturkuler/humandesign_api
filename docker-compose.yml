@@ -1,0 +1,19 @@
+# Specify the Docker Compose file format version
+version: '3.8'
+
+# Define the services (containers) for the application
+services:
+  # Service for the Human Design API
+  humandesign-api:
+    # Use the specified Docker image for the API
+    image: dturkuler/humandesign_api:latest
+    # Assign a custom name to the container
+    container_name: humandesignapi
+    # Map ports from the host to the container (host:container)
+    ports:
+      - "9021:9021"
+    # Set environment variables within the container
+    environment:
+      - HD_API_TOKEN=12345678 # API token for authentication
+    # Configure the container to always restart if it stops
+    restart: always

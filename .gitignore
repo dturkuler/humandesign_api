@@ -1,9 +1,31 @@
-**/__pycache__/
-**/.pytest_cache/
-**/venv/
-**/.roo/
-**/.gitignore
-**/.clinerules
-**/.git/COMMIT_EDITMSG
-**/.git
-**/.env
+# Python
+__pycache__/
+*.pyc
+*.log
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.*
+.roo/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+*.swp
+*.swo
+
+# Test and build artifacts
+.pytest_cache/
+.clinerules
+
+# Operating System files
+.DS_Store
+Thumbs.db
