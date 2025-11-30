@@ -349,8 +349,73 @@ def get_auth(active_chakras,active_channels_dict):
     else: auth = "unknown?" #sanity check;-)
     
     return auth
+def get_typ(active_channels_dict, active_chakras): 
+    ''' 
+    get Energie-Type from active channels 
+    Args:
+        active_channels_dict(dict): all active channels, keys: ["label","planets","gate","ch_gate"]
+        active_chakras(list/set): list of defined centers (e.g. ["SL", "RT", "GC"...])
+    Return: 
+        typ(str): typ (GENERATOR, MANIFESTING GENERATOR, PROJECTOR, MANIFESTOR, REFLECTOR)
+    '''
 
-def get_typ_old(active_channels_dict,active_chakras): 
+    # --- 1. CHECK ROOT (RT) TO THROAT (TT) ---
+    # Checks path: Throat -> Spleen -> Root OR Throat -> G-Center -> Spleen -> Root
+    RT_TT_isconnected = (
+        is_connected(active_channels_dict, "TT", "SN", "RT")
+        | is_connected(active_channels_dict, "TT", "GC", "SN", "RT")
+    )
+
+    # --- 2. CHECK HEART (HT) TO THROAT (TT) ---
+    # Checks path: Direct (21-45), Via G-Center, or Via Spleen
+    TT_HT_isconnected = (
+        is_connected(active_channels_dict, "TT", "HT")               # Direct (e.g., 21-45)
+        | is_connected(active_channels_dict, "TT", "GC", "HT")       # Via G-Center
+        | is_connected(active_channels_dict, "TT", "SN", "HT")       # Via Spleen
+    )
+
+    # --- 3. CHECK SACRAL (SL) TO THROAT (TT) ---
+    # [FIX APPLIED HERE]
+    # Previous code only checked via G-Center ("TT","GC","SL").
+    # We now add the direct check ("TT","SL") for channel 20-34.
+    TT_SL_isconnected = (
+        is_connected(active_channels_dict, "TT", "GC", "SL")         # Via G-Center
+        | is_connected(active_channels_dict, "TT", "SL")             # Direct (Channel 20-34)
+    )
+
+    # --- 4. CHECK ANY MOTOR TO THROAT ---
+    # Combines all motor connections (Heart, Sacral, Solar Plexus, Root)
+    # Note: Solar Plexus (SP) check is added directly here.
+    TT_connects_SP_SL_HT_RT = (
+        TT_HT_isconnected 
+        | TT_SL_isconnected 
+        | is_connected(active_channels_dict, "TT", "SP")             # Solar Plexus (e.g., 12-22, 35-36)
+        | RT_TT_isconnected
+    )
+
+    # --- 5. DETERMINE TYPE ---
+    
+    # Rule 1: No Definition = Reflector
+    if not len(active_chakras): 
+        typ = "REFLECTOR"      
+    
+    # Rule 2: Defined Sacral = Generator Family
+    elif "SL" in active_chakras:
+        if TT_connects_SP_SL_HT_RT:
+            typ = "MANIFESTING GENERATOR"
+        else:
+            typ = "GENERATOR"
+            
+    # Rule 3: Undefined Sacral = Projector or Manifestor
+    else: # (SL is NOT defined)
+        if TT_connects_SP_SL_HT_RT:
+            typ = "MANIFESTOR"
+        else:
+            typ = "PROJECTOR"
+            
+    return typ
+
+def get_typ_old1(active_channels_dict,active_chakras): 
     ''' 
     get Energie-Type from active channels 
         selection rules see (ref.: https://www.mondsteinsee.de/human-design-typen/)
@@ -393,7 +458,7 @@ def get_typ_old(active_channels_dict,active_chakras):
 
     return typ
 
-def get_typ(active_channels_dict, active_chakras):
+def get_typ_old(active_channels_dict, active_chakras):
     ''' 
     Get Energy-Type from active channels.
     Args:
