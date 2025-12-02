@@ -72,25 +72,43 @@ def get_profile_name(profile_list):
     except Exception as e:
         return f"An unexpected error occurred: {str(e)}"
 
+
+
+
 def general(data):
+    # 1. Get the Energy Type (Calculated previously)
+    e_type = data.get('energie_type', 'Unknown')
+    
+    # 2. Get the specific details for this Type from our new Map
+    # We use .get() to safely default to "Unknown" if the type isn't found
+    type_details = hd_constants.TYPE_DETAILS_MAP.get(e_type, hd_constants.TYPE_DETAILS_MAP["Unknown"])
+
+    # 3. Construct Output
     output = {
         "birth_date": data['birth_date'],
         "create_date": data['create_date'],
-        "energie_type": data['energie_type'],
-        # "inner_authority": data['inner_authority'],
+        
+        # --- Type Info ---
+        "energie_type": e_type,
+        "strategy": type_details['strategy'],     # <--- NEW
+        "signature": type_details['signature'],   # <--- NEW (Goal)
+        "not_self": type_details['not_self'],     # <--- NEW (Warning)
+        "aura": type_details['aura'],             # <--- NEW
+        # -----------------
+
         "inner_authority": hd_constants.INNER_AUTHORITY_NAMES_MAP.get(data['inner_authority'], data['inner_authority']),
-        # "inc_cross": data['inc_cross'],
         "inc_cross": get_incarnation_cross_map(data['inc_cross']),
         "profile": get_profile_name(data['profile']),
-        # "defined_centers": list(data['active_chakras']),
+        
         "defined_centers": [hd_constants.CHAKRA_NAMES_MAP.get(chakra, chakra) for chakra in data['active_chakras']],
-        # "undefined_centers": list(data['inactive_chakras']),
         "undefined_centers": [hd_constants.CHAKRA_NAMES_MAP.get(chakra, chakra) for chakra in data['inactive_chakras']],
         "split": hd_constants.SPLIT_DB.get(str(data['split']), data['split']),
         "variables": data['variables']
-  }
-  
+    }
+    
     return json.dumps(output, indent=2)
+
+
 
 def gatesJSON(data):
     # Initialize the structure for 'prs' and 'des'
@@ -189,4 +207,3 @@ def channelsJSON(data, details=False):
     
     # Convert the result to a JSON string
     return json.dumps({"Channels": result}, indent=4)
-

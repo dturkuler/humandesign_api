@@ -386,3 +386,46 @@ SPLIT_DB = {
 				"3": "Triple Split Definition",    # Three separate areas of definition
 				"4": "Quadruple Split Definition"  # Four separate areas of definition
 }
+
+# hd_constants.py or configuration section
+
+TYPE_DETAILS_MAP = {
+    "Manifestor": {
+        "strategy": "To Inform",
+        "signature": "Peace",
+        "not_self": "Anger",
+        "aura": "Closed & Repelling"
+    },
+    "Generator": {
+        "strategy": "Wait to Respond",
+        "signature": "Satisfaction",
+        "not_self": "Frustration",
+        "aura": "Open & Enveloping"
+    },
+    "Manifesting Generator": {
+        "strategy": "Wait to Respond", 
+        "signature": "Satisfaction",
+        # Updated to reflect the hybrid nature (Frustration from Generator side, Anger from Manifestor side)
+        "not_self": "Frustration & Anger", 
+        "aura": "Open & Enveloping"
+    },
+    "Projector": {
+        "strategy": "Wait for the Invitation",
+        "signature": "Success",
+        "not_self": "Bitterness",
+        "aura": "Focused & Absorbing"
+    },
+    "Reflector": {
+        "strategy": "Wait a Lunar Cycle",
+        "signature": "Surprise",
+        "not_self": "Disappointment",
+        "aura": "Sampling & Resistant"
+    },
+    # Fallback for errors
+    "Unknown": {
+        "strategy": "Unknown",
+        "signature": "Unknown",
+        "not_self": "Unknown",
+        "aura": "Unknown"
+    }
+}

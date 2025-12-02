@@ -397,115 +397,24 @@ def get_typ(active_channels_dict, active_chakras):
     
     # Rule 1: No Definition = Reflector
     if not len(active_chakras): 
-        typ = "REFLECTOR"      
+        typ = "Reflector"      
     
     # Rule 2: Defined Sacral = Generator Family
     elif "SL" in active_chakras:
         if TT_connects_SP_SL_HT_RT:
-            typ = "MANIFESTING GENERATOR"
+            typ = "Manifesting Generator"
         else:
-            typ = "GENERATOR"
+            typ = "Generator"
             
     # Rule 3: Undefined Sacral = Projector or Manifestor
     else: # (SL is NOT defined)
         if TT_connects_SP_SL_HT_RT:
-            typ = "MANIFESTOR"
+            typ = "Manifestor"
         else:
-            typ = "PROJECTOR"
+            typ = "Projector"
             
     return typ
 
-def get_typ_old1(active_channels_dict,active_chakras): 
-    ''' 
-    get Energie-Type from active channels 
-        selection rules see (ref.: https://www.mondsteinsee.de/human-design-typen/)
-    Args:
-        active_channels_dict(dict): all active channels, keys: ["label","planets","gate","ch_gate"]
-    Return: 
-        typ(str): typ (G=Generator,MG=Manifesting,Generator,P=Projector,
-                       M=Manifestor,R=Reflector)
-    '''
-    #print (active_channels_dict)
-    #root is connected with throat? (direct,indirect)
-    RT_TT_isconnected = (is_connected(active_channels_dict,"TT","SN","RT")
-                         |is_connected(active_channels_dict,"TT","GC","SN","RT")
-                        )
-    #throat is connected with hearth? (direct,indirect)                   
-    TT_HT_isconnected = (is_connected(active_channels_dict,"TT","HT")
-                         | is_connected(active_channels_dict,"TT","GC","HT")
-                         | is_connected(active_channels_dict,"TT","SN","HT")
-                        )
-    #throat is connected with sakral centre? (indirect)
-    TT_SL_isconnected = is_connected(active_channels_dict,"TT","GC","SL")
-    #is throat connected with energy centres (SP,SL,HT,RT)?
-    TT_connects_SP_SL_HT_RT = (TT_HT_isconnected 
-                               | TT_SL_isconnected 
-                               | is_connected(active_channels_dict,"TT","SP") 
-                               | RT_TT_isconnected
-                              )
-
-    #if list is empty -> R-Typ
-    if  not len(active_chakras): 
-        typ ="REFLECTOR"      
-    elif ("SL" in active_chakras) & (TT_connects_SP_SL_HT_RT==False):
-        typ = "GENERATOR"
-    elif ("SL" in active_chakras) & (TT_connects_SP_SL_HT_RT):
-        typ = "MANIFESTING GENERATOR"   
-    elif ("SL" not in active_chakras) & (TT_connects_SP_SL_HT_RT==False):
-        typ = "PROJECTOR"   
-    elif ("SL" not in active_chakras) & (TT_connects_SP_SL_HT_RT):
-        typ = "MANIFESTOR"
-
-    return typ
-
-def get_typ_old(active_channels_dict, active_chakras):
-    ''' 
-    Get Energy-Type from active channels.
-    Args:
-        active_channels_dict (dict): all active channels, keys: ["label", "planets", "gate", "ch_gate"]
-        active_chakras (list): all active centers (chakras)
-    Return: 
-        typ (str): Type (GENERATOR, MANIFESTING GENERATOR, PROJECTOR, MANIFESTOR, REFLECTOR)
-    '''
-    
-    # No active centers => Reflector
-    if len(active_chakras) == 0:
-        return "REFLECTOR"
-    
-    # Case: Sacral is undefined (can be Manifestor or Projector)
-    if "SL" not in active_chakras:
-        # If Throat is undefined, it must be a Projector
-        if "TT" not in active_chakras:
-            return "PROJECTOR"
-
-        # Check connections from motor centers (HT, EM, RT) to throat (=> Manifestor)
-        component = get_component(active_channels_dict, "TT")  # Throat component
-        if "HT" in active_chakras and get_component(active_channels_dict, "HT") == component:
-            return "MANIFESTOR"
-        if "EM" in active_chakras and get_component(active_channels_dict, "EM") == component:
-            return "MANIFESTOR"
-        if "RT" in active_chakras and get_component(active_channels_dict, "RT") == component:
-            return "MANIFESTOR"
-        
-        # If no motor center is connected to the throat, it is a Projector by definition
-        return "PROJECTOR"
-    
-    # Case: Sacral is defined (can be Generator or Manifesting Generator)
-    if "TT" not in active_chakras:
-        return "GENERATOR"
-
-    # Check connections from motor centers (HT, EM, RT) to throat (=> Manifesting Generator)
-    if "HT" in active_chakras and get_component(active_channels_dict, "HT") == get_component(active_channels_dict, "TT"):
-        return "MANIFESTING GENERATOR"
-    if "EM" in active_chakras and get_component(active_channels_dict, "EM") == get_component(active_channels_dict, "TT"):
-        return "MANIFESTING GENERATOR"
-    if "RT" in active_chakras and get_component(active_channels_dict, "RT") == get_component(active_channels_dict, "TT"):
-        return "MANIFESTING GENERATOR"
-    if get_component(active_channels_dict, "SL") == get_component(active_channels_dict, "TT"):
-        return "MANIFESTING GENERATOR"
-
-    # No connection to throat => Generator
-    return "GENERATOR"
 
 def get_component(active_channels_dict, chakra):
     """
