@@ -7,11 +7,13 @@ from svgpath2mpl import parse_path
 import json
 import numpy as np
 
+import io
+import os
+
 # --- 1. CONFIGURATION ---
 LAYOUT_FILE = "layout_data.json"
 OUTPUT_FILE = "bodygraph_output.png"
 
-# Colors
 # Colors
 COLOR_DEFINED = "#D4AF37"  # Gold-ish for defined centers
 COLOR_UNDEFINED = "#FFFFFF" # Pure White
@@ -26,7 +28,10 @@ CANVAS_W = 240
 CANVAS_H = 320
 
 def load_json_layout():
-    with open(LAYOUT_FILE, 'r') as f:
+    # Use absolute path relative to this file
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(base_dir, LAYOUT_FILE)
+    with open(path, 'r') as f:
         return json.load(f)
 
 def svg_to_mpl_path(svg_d):
@@ -187,10 +192,27 @@ def draw_chart(chart_data, layout_data):
     # Current setup is 240x320. Side panels would need more width.
     # Let's keep it simple and just draw the chart as requested.
     
-    plt.savefig(OUTPUT_FILE, bbox_inches='tight', pad_inches=0.1, transparent=True)
-    plt.savefig(OUTPUT_FILE.replace('.png', '.svg'), bbox_inches='tight', pad_inches=0.1, transparent=True)
-    print(f"Chart saved to {OUTPUT_FILE} and {OUTPUT_FILE.replace('.png', '.svg')}")
+    # 6. SIDE PANELS (Planets) - Optional but good for completeness
+    # Draw simple lists on left/right outside the canvas w/ clipping off? 
+    # Current setup is 240x320. Side panels would need more width.
+    # Let's keep it simple and just draw the chart as requested.
+    
+    return fig
 
+def generate_bodygraph_image(chart_data, fmt='png'):
+    """
+    Generates the BodyGraph image and returns it as whitespace-trimmed bytes.
+    fmt: 'png' or 'svg'
+    """
+    layout = load_json_layout()
+    fig = draw_chart(chart_data, layout)
+    
+    buf = io.BytesIO()
+    fig.savefig(buf, format=fmt, bbox_inches='tight', pad_inches=0.1, transparent=True)
+    plt.close(fig)
+    buf.seek(0)
+    return buf.read()
+    
 # --- EXECUTION ---
 if __name__ == "__main__":
     # Test Data
@@ -525,4 +547,7 @@ if __name__ == "__main__":
     
     chart = json.loads(json_data)
     layout = load_json_layout()
-    draw_chart(chart, layout)
+    fig = draw_chart(chart, layout)
+    fig.savefig(OUTPUT_FILE, bbox_inches='tight', pad_inches=0.1, transparent=True)
+    fig.savefig(OUTPUT_FILE.replace('.png', '.svg'), bbox_inches='tight', pad_inches=0.1, transparent=True)
+    print(f"Chart saved to {OUTPUT_FILE} and {OUTPUT_FILE.replace('.png', '.svg')}")
