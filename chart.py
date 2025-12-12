@@ -202,13 +202,22 @@ def draw_chart(chart_data, layout_data):
 def generate_bodygraph_image(chart_data, fmt='png'):
     """
     Generates the BodyGraph image and returns it as whitespace-trimmed bytes.
-    fmt: 'png' or 'svg'
+    fmt: 'png', 'svg', 'jpg', 'jpeg'
     """
     layout = load_json_layout()
     fig = draw_chart(chart_data, layout)
     
     buf = io.BytesIO()
-    fig.savefig(buf, format=fmt, bbox_inches='tight', pad_inches=0.1, transparent=True)
+    
+    # JPG does not support transparency
+    use_transparent = True
+    if fmt.lower() in ['jpg', 'jpeg']:
+        use_transparent = False
+        # Optional: Set background to white explicitly if strictly needed, 
+        # but matplotlib defaults to white usually.
+        fig.patch.set_facecolor('white')
+
+    fig.savefig(buf, format=fmt, bbox_inches='tight', pad_inches=0.1, transparent=use_transparent)
     plt.close(fig)
     buf.seek(0)
     return buf.read()
