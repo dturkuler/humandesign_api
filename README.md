@@ -29,8 +29,8 @@ To get the Human Design API up and running, follow these steps:
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/your-repo/humandesign_v1.git
-    cd humandesign_v1
+    git clone https://github.com/your-repo/humandesign_api.git
+    cd humandesign_api
     ```
 
 2.  **Environment Variables**:
@@ -64,36 +64,44 @@ The project is organized as follows:
 
 ```
 .
-├── _favicon.ico
 ├── .env_example
 ├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
 ├── api.py
+├── chart.py
 ├── convertJSON.py
 ├── docker-compose.yml
 ├── Dockerfile
 ├── geocode.py
 ├── hd_constants.py
 ├── hd_features.py
-├── LICENSE
-├── README.mdx
+├── layout_data.json
+├── openapi.yaml
 ├── requirements.txt
-└── static/
-    └── favicon.ico
+├── static/
+│   └── favicon.ico
+└── version.py
 ```
 
-*   **`api.py`**: The main FastAPI application. It defines the API endpoints, handles request parsing, calls the Human Design calculation logic, and formats the response.
-*   **`convertJSON.py`**: Contains utility functions for converting raw Human Design calculation results into a structured JSON format for the API response. It also includes helper functions for mapping incarnation crosses, profiles, and channels to their descriptive names.
-*   **`Dockerfile`**: Defines the Docker image for the API, specifying the base Python image, dependencies, and application setup.
-*   **`docker-compose.yml`**: Orchestrates the Docker containers, defining the `humandesign-api` service, port mappings, and environment variables.
-*   **`geocode.py`**: Provides functions for geocoding (converting place names to latitude and longitude) and reverse geocoding, used to determine the correct timezone for birth locations.
-*   **`hd_constants.py`**: Stores all the constant values, mappings, and databases required for Human Design calculations, such as planetary codes, I Ging circle, chakra definitions, incarnation cross types, profile names, and channel meanings.
-*   **`hd_features.py`**: Contains the core logic for Human Design calculations. This includes functions for converting timestamps to Julian dates, calculating creation dates, mapping planetary positions to gates, lines, colors, tones, and bases, and determining energy types, inner authorities, incarnation crosses, profiles, active chakras, and splits.
-*   **`requirements.txt`**: Lists all Python dependencies required by the project.
-*   **`LICENSE`**: The license file for the project.
-*   **`README.mdx`**: This markdown file, providing an overview, setup instructions, and documentation for the project.
-*   **`.env_example`**: An example file for environment variables, specifically for the `HD_API_TOKEN`.
-*   **`.gitignore`**: Specifies intentionally untracked files that Git should ignore.
-*   **`static/`**: Directory for static assets, currently containing `favicon.ico`.
+*   **`api.py`**: The main FastAPI application. Defines endpoints, handles requests, and integrates calculation and visualization logic.
+*   **`chart.py`**:  Generates high-fidelity BodyGraph images (PNG, SVG, JPG) using `matplotlib` and extracted vector geometry.
+*   **`convertJSON.py`**: Utility functions for formatting calculation results into structured JSON.
+*   **`docker-compose.yml`**: Orchestrates the Docker service for easy deployment.
+*   **`Dockerfile`**: Defines the container environment for the API.
+*   **`geocode.py`**: Handles geocoding and timezone resolution.
+*   **`hd_constants.py`**: Stores Human Design constants, mappings, and databases.
+*   **`hd_features.py`**: Core logic for Human Design astrological calculations.
+*   **`layout_data.json`**: Contains precise SVG paths and coordinates for rendering the BodyGraph.
+*   **`openapi.yaml`**: The OpenAPI 3.0 specification file for the API.
+*   **`requirements.txt`**: Python dependencies.
+*   **`version.py`**: Single source of truth for the project version.
+*   **`CHANGELOG.md`**: Records all notable changes to the project.
+*   **`LICENSE`**: Project license.
+*   **`README.md`**: Project documentation (this file).
+*   **`.env_example`**: Template for environment variables.
+*   **`static/`**: Static assets directory.
 
 ## API Usage
 
@@ -127,6 +135,41 @@ This endpoint requires an API token passed in the `Authorization` header as a Be
 curl -X GET "http://localhost:9021/calculate?year=1990&month=7&day=15&hour=14&minute=30&place=London%2C%20UK" \
      -H "Authorization: Bearer your_secret_token_here"
 ```
+
+### `GET /bodygraph`
+
+Generates a visual BodyGraph chart image based on birth information.
+
+#### Parameters
+
+| Name     | Type    | Description                                     | Required |
+| :------- | :------ | :---------------------------------------------- | :------- |
+| `year`   | `integer` | Birth year (e.g., `1990`)                       | Yes      |
+| `month`  | `integer` | Birth month (e.g., `7` for July)                | Yes      |
+| `day`    | `integer` | Birth day (e.g., `15`)                          | Yes      |
+| `hour`   | `integer` | Birth hour (24-hour format, e.g., `14` for 2 PM) | Yes      |
+| `minute` | `integer` | Birth minute (e.g., `30`)                       | Yes      |
+| `second` | `integer` | Birth second (optional, default `0`)            | No       |
+| `place`  | `string`  | Birth place (city, country, e.g., `London, UK`) | Yes      |
+| `fmt`    | `string`  | Image format: `png`, `svg`, `jpg`, `jpeg` (default: `png`) | No       |
+
+#### Authentication
+
+This endpoint requires an API token passed in the `Authorization` header as a Bearer token.
+
+`Authorization: Bearer your_secret_token_here`
+
+#### Example Request
+
+```bash
+curl -X GET "http://localhost:9021/bodygraph?year=1990&month=7&day=15&hour=14&minute=30&place=London%2C%20UK&fmt=png" \
+     -H "Authorization: Bearer your_secret_token_here" \
+     -o bodygraph.png
+```
+
+#### Response
+
+Returns the image file directly (MIME type `image/png`, `image/svg+xml`, or `image/jpeg`).
 
 #### Example Response
 
