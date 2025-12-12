@@ -171,6 +171,8 @@ curl -X GET "http://localhost:9021/bodygraph?year=1990&month=7&day=15&hour=14&mi
 
 Returns the image file directly (MIME type `image/png`, `image/svg+xml`, or `image/jpeg`).
 
+![BodyGraph Sample](static/bodygraph_sample.png)
+
 #### Example Response
 
 ```json
