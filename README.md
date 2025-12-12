@@ -10,11 +10,13 @@ The API is containerized using Docker, ensuring consistent and isolated environm
 
 ### Key Features:
 
-*   **FastAPI Backend**: High-performance Python web framework for building APIs.
-*   **Human Design Calculations**: Utilizes `pyswisseph` for precise astrological calculations and `geopy` for geocoding and timezone determination.
-*   **Comprehensive Output**: Provides detailed Human Design chart information, including energy type, inner authority, incarnation cross, profile, active/inactive chakras, split definition, and planetary gate data.
-*   **Dockerized Deployment**: Easy to set up and deploy using Docker and Docker Compose.
-*   **Authentication**: API token-based authentication for secure access.
+*   **FastAPI Backend**: High-performance, async-ready Python web framework.
+*   **Precise Calculations**: Uses `pyswisseph` for Swiss Ephemeris accuracy and `geopy`/`timezonefinder` for reliable location and timezone resolution.
+*   **BodyGraph Visualization**: Generates high-fidelity, transparent BodyGraph charts in PNG, SVG, and JPG formats via the `/bodygraph` endpoint.
+*   **Comprehensive Chart Data**: Returns Energy Type, Strategy, Authority, Profile, Incarnation Cross, Variables, and full Planetary/Gate positions (Gate, Line, Color, Tone, Base).
+*   **Docker Ready**: Simple deployment with Docker and Docker Compose.
+*   **OpenAPI Specification**: Fully documented API with `openapi.yaml` and interactive Swagger UI.
+*   **Authentication**: Secure access via Bearer token.
 
 ## Installation and Setup
 
