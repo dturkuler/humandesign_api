@@ -195,6 +195,134 @@ def get_bodygraph_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating chart image: {e}")
 
+
+# --- Helper to process transit data (combines existing logic) ---
+def process_transit_data(transit_date_timestamp, birth_timestamp):
+    # 1. Calculate birth chart to get natal features (prs + des)
+    birth_features = hd.calc_single_hd_features(birth_timestamp, report=False, channel_meaning=True, day_chart_only=False)
+    natal_gate_dict = birth_features[6]
+
+    # 2. Calculate day chart (transit features only)
+    day_gate_dict = hd.calc_single_hd_features(transit_date_timestamp, day_chart_only=True)
+    
+    # 3. Prepare composite dict: Natal (prs+des) + Transit (day chart)
+    # The composite analysis expects both natal and a day chart to be concatenated.
+    # We explicitly select keys to merge to avoid KeyErrors (e.g., 'ch_gate')
+    keys_to_merge = ["label", "planets", "lon", "gate", "line", "color", "tone", "base"]
+    composite_dict = {
+        key: natal_gate_dict[key] + day_gate_dict[key] 
+        for key in keys_to_merge if key in natal_gate_dict and key in day_gate_dict
+    }
+    
+    # 4. Analyze composite features
+    active_channels_dict, active_chakras = hd.get_channels_and_active_chakras(composite_dict, meaning=True)
+    typ = hd.get_typ(active_channels_dict, active_chakras) # The resulting 'transit' type
+    auth = hd.get_auth(active_chakras, active_channels_dict) # The resulting 'transit' authority
+    
+    # 5. Get comparison data (New and Duplicated Channels/Chakras)
+    # We must mock the input for composite_chakras_channels.
+    persons_dict = {
+        "natal": birth_timestamp,
+        "transit": transit_date_timestamp # We treat transit as another "person" for comparison
+    }
+    # This comparison highlights what is new *to the combination*
+    new_channels, duplicated_channels, new_chakras, comp_chakras = hd.composite_chakras_channels(
+        persons_dict, "natal", "transit") 
+    
+    # 6. Structure output
+    return {
+        "transit_date": transit_date_timestamp,
+        "composite_type": typ,
+        "composite_authority": auth,
+        "new_defined_channels": list(zip(new_channels["gate"], new_channels["ch_gate"])),
+        "new_channel_meanings": list(new_channels["meaning"]),
+        "new_defined_centers": list(new_chakras),
+        "total_defined_centers": len(comp_chakras),
+        "raw_transit_gates": day_gate_dict
+    }
+
+
+@app.get("/transits/solar_return")
+def get_solar_return(
+    year: int = Query(..., description="Birth year"),
+    month: int = Query(..., description="Birth month"),
+    day: int = Query(..., description="Birth day"),
+    hour: int = Query(..., description="Birth hour"),
+    minute: int = Query(0, description="Birth minute (default 0)"),
+    second: int = Query(0, description="Birth second (optional, default 0)"),
+    place: str = Query(..., description="Birth place (city, country)"),
+    sr_year_offset: int = Query(0, description="Calculate Solar Return for X years after birth. 0 is the current SR."),
+    authorized: bool = Depends(verify_token)
+):
+    # Same geocoding/timezone logic as calculate_hd
+    latitude, longitude = get_latitude_longitude(place)
+    if latitude is None or longitude is None:
+        raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'")
+    tf = TimezoneFinder()
+    zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
+    birth_time = (year, month, day, hour, minute, second)
+    hours = hd.get_utc_offset_from_tz(birth_time, zone)
+    birth_timestamp = tuple(list(birth_time) + [int(hours)])
+
+    # Calculate Solar Return Date
+    try:
+        instance = hd.hd_features(*birth_timestamp)
+        sr_utc_date_tuple = instance.get_solar_return_date(sr_year_offset)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error calculating Solar Return date: {str(e)}")
+
+    # Format the SR date for transit calculation
+    sr_year, sr_month, sr_day, sr_hour, sr_minute, sr_second = sr_utc_date_tuple
+    # Re-use the birth location's offset for the SR chart (standard HD practice)
+    sr_timestamp = (int(sr_year), int(sr_month), int(sr_day), int(sr_hour), int(sr_minute), int(sr_second), int(hours))
+    
+    # Calculate the full composite chart at the SR moment
+    sr_composite_data = process_transit_data(sr_timestamp, birth_timestamp)
+    
+    return {
+        "solar_return_year": sr_year_offset,
+        "solar_return_utc_date": f"{int(sr_year)}-{int(sr_month):02d}-{int(sr_day):02d} {int(sr_hour):02d}:{int(sr_minute):02d}:{int(sr_second):02d}",
+        "sr_chart_analysis": sr_composite_data
+    }
+
+
+@app.get("/transits/daily")
+def get_daily_transit(
+    year: int = Query(..., description="Birth year"),
+    month: int = Query(..., description="Birth month"),
+    day: int = Query(..., description="Birth day"),
+    hour: int = Query(..., description="Birth hour"),
+    minute: int = Query(0, description="Birth minute (default 0)"),
+    second: int = Query(0, description="Birth second (optional, default 0)"),
+    place: str = Query(..., description="Birth place (city, country)"),
+    transit_year: int = Query(..., description="Transit year to analyze"),
+    transit_month: int = Query(..., description="Transit month to analyze"),
+    transit_day: int = Query(..., description="Transit day to analyze"),
+    authorized: bool = Depends(verify_token)
+):
+    # Geocoding/timezone for the BIRTH location
+    latitude, longitude = get_latitude_longitude(place)
+    if latitude is None or longitude is None:
+        raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'")
+    tf = TimezoneFinder()
+    zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
+    birth_time = (year, month, day, hour, minute, second)
+    hours = hd.get_utc_offset_from_tz(birth_time, zone)
+    birth_timestamp = tuple(list(birth_time) + [int(hours)])
+
+    # Transit timestamp (uses Birth location's local time/offset for the analysis moment)
+    transit_time = (transit_year, transit_month, transit_day, birth_time[3], birth_time[4], birth_time[5])
+    transit_timestamp = tuple(list(transit_time) + [int(hours)])
+
+    # Calculate the composite chart at the transit moment
+    composite_data = process_transit_data(transit_timestamp, birth_timestamp)
+
+    return {
+        "transit_date": f"{transit_year}-{transit_month:02d}-{transit_day:02d}",
+        "transit_time_at_birth_location": f"{birth_time[3]:02d}:{birth_time[4]:02d}",
+        "analysis": composite_data
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
