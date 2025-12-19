@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Human Design API
   description: API for calculating Human Design charts based on birth data.
-  version: 1.0.5
+  version: 1.1.0
 servers:
   - url: http://localhost:8000
     description: Local development server
@@ -196,6 +196,73 @@ components:
         detail:
           type: string
           example: "Invalid or missing authentication token."
+
+    # --- Transit Section Schema ---
+    TransitAnalysis:
+      type: object
+      properties:
+        transit_date:
+          type: array
+          items: 
+             type: integer
+          description: Timestamp tuple of the transit
+        composite_type:
+          type: string
+          description: Energy Type of the composite chart
+          example: "Generator"
+        composite_authority:
+          type: string
+          description: Authority of the composite chart
+          example: "Emotional"
+        new_defined_channels:
+          type: array
+          items:
+            type: array
+            items:
+               type: integer
+          description: List of newly defined channels (tuples of gate numbers)
+        new_channel_meanings:
+          type: array
+          items:
+            type: string
+          description: Meanings of the newly defined channels
+        new_defined_centers:
+          type: array
+          items:
+            type: string
+          description: List of newly defined centers
+        total_defined_centers:
+          type: integer
+          description: Total number of defined centers in the composite
+      required:
+        - transit_date
+        - composite_type
+        - composite_authority
+
+    SolarReturnResponse:
+      type: object
+      properties:
+        solar_return_year:
+          type: integer
+          description: The offset year requested
+        solar_return_utc_date:
+          type: string
+          description: The calculated UTC date of the Solar Return
+          example: "1986-10-26 16:51:19"
+        sr_chart_analysis:
+          $ref: '#/components/schemas/TransitAnalysis'
+
+    DailyTransitResponse:
+      type: object
+      properties:
+        transit_date:
+          type: string
+          example: "2024-12-20"
+        transit_time_at_birth_location:
+          type: string
+          example: "12:00"
+        analysis:
+          $ref: '#/components/schemas/TransitAnalysis'
 
 security:
   - bearerAuth: []
@@ -395,3 +462,137 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+
+  /transits/daily:
+    get:
+      summary: Get Daily Transit Analysis
+      description: |
+        Calculates the "Weather of the Day" by comparing the user's natal chart with the transit chart for a specific date.
+        Returns the composite analysis, highlighting temporary influences.
+      tags:
+        - AuraCycle
+      parameters:
+        - in: query
+          name: year
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: month
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: day
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: hour
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: minute
+          schema:
+            type: integer
+            default: 0
+          required: false
+        - in: query
+          name: second
+          schema:
+            type: integer
+            default: 0
+          required: false
+        - in: query
+          name: place
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: transit_year
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: transit_month
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: transit_day
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyTransitResponse'
+        '401':
+          description: Unauthorized
+
+  /transits/solar_return:
+    get:
+      summary: Get Solar Return Analysis
+      description: |
+        Calculates the Solar Return date for a specific year (offset from birth) and analyzing the Yearly Theme.
+        Returns the SR date and the composite analysis of Vital/SR charts.
+      tags:
+        - AuraCycle
+      parameters:
+        - in: query
+          name: year
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: month
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: day
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: hour
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: minute
+          schema:
+            type: integer
+            default: 0
+          required: false
+        - in: query
+          name: second
+          schema:
+            type: integer
+            default: 0
+          required: false
+        - in: query
+          name: place
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: sr_year_offset
+          schema:
+            type: integer
+            default: 0
+            description: 0 for birth year return (not useful), 1 for 1st return (age 1), etc.
+          required: false
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolarReturnResponse'
+        '401':
+          description: Unauthorized
