@@ -219,6 +219,76 @@ class hd_features:
         return result_dict
     
     
+    def calc_solar_return_jd(self, jdut, year_offset=0):
+        '''
+        Calculate the Julian date of the Solar Return for a specific year.
+        Args:
+           jdut (float): Julian date of birth.
+           year_offset (int): Year offset from birth (0 for the current SR since birth).
+        Return:
+            sr_julian_day (float): Julian date of the Solar Return.
+        '''
+        # 1. Convert birth Julian Date back to UTC time components
+        # Note: If year_offset is 0, swisseph finds the *next* return after the birth date.
+        # If year_offset > 0, we estimate the JD start search to find the correct SR.
+        
+        # Determine the year to start the search from (beginning of the target SR year)
+        # revjul returns (y, m, d, h_decimal)
+        year, month, day, hour_decimal = swe.revjul(jdut)
+        
+        # Convert decimal hour to h, m, s for datetime
+        hour = int(hour_decimal)
+        minute_float = (hour_decimal - hour) * 60
+        minute = int(minute_float)
+        second = int((minute_float - minute) * 60)
+        
+        dt_start = datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
+        
+        target_year = dt_start.year + year_offset
+        # Start search from the beginning of the target calendar year
+        target_year_start_dt = datetime(target_year, 1, 1, 0, 0, 0)
+        
+        # Convert to decimal hour for swe.julday
+        hour_dec = target_year_start_dt.hour + target_year_start_dt.minute/60.0 + target_year_start_dt.second/3600.0
+        
+        target_year_start_jd = swe.julday(
+            target_year_start_dt.year, target_year_start_dt.month, target_year_start_dt.day, 
+            hour_dec
+        )
+
+        # 3. Calculate Natal Sun Longitude
+        # Use FLG_SWIEPH (default) or whatever flag is appropriate.
+        # swe.SUN is 0
+        natal_sun_res = swe.calc_ut(jdut, swe.SUN)
+        natal_sun_lon = natal_sun_res[0][0]
+
+        # 4. Use swe.solcross_ut to find when Sun returns to this longitude
+        # It searches forward from target_year_start_jd
+        sr_jdut = swe.solcross_ut(natal_sun_lon, target_year_start_jd)
+        
+        return sr_jdut
+
+    def get_solar_return_date(self, year_offset):
+        '''
+        Calculates the UTC date and time of the Solar Return.
+        '''
+        birth_julday = self.timestamp_to_juldate(self.time_stamp)
+        sr_julday = self.calc_solar_return_jd(birth_julday, year_offset)
+        
+        # swe.jdut1_to_utc returns (year, month, day, hour, minute, second)
+        # We take all 6 values
+        sr_utc_date_tuple = swe.jdut1_to_utc(sr_julday)
+        # Round seconds to integer if needed, or keep as is.
+        # Ensure we have 6 elements for API.
+        if len(sr_utc_date_tuple) >= 6:
+             sr_utc_date_tuple = sr_utc_date_tuple[:6]
+        else:
+             # Fallback if fewer elements
+             sr_utc_date_tuple = tuple(list(sr_utc_date_tuple) + [0]*(6-len(sr_utc_date_tuple)))
+
+        return sr_utc_date_tuple    
+
+    
 #############################################################################
 """calculation functions based on hd_features based-class starts from here"""
 
