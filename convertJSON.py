@@ -102,7 +102,7 @@ def general(data):
         
         "defined_centers": [hd_constants.CHAKRA_NAMES_MAP.get(chakra, chakra) for chakra in data['active_chakras']],
         "undefined_centers": [hd_constants.CHAKRA_NAMES_MAP.get(chakra, chakra) for chakra in data['inactive_chakras']],
-        "split": hd_constants.SPLIT_DB.get(str(data['split']), data['split']),
+        "definition": hd_constants.DEFINITION_DB.get(str(data['definition']), data['definition']),
         "variables": data['variables']
     }
     

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2025-12-22
+
+### Changed
+- **API Response**: Renamed the output field `split` to `definition` across all endpoints (`/calculate`, `/bodygraph`, `/transits`, etc.) to better align with Human Design terminology.
+- **Documentation**: Updated `README.md` and Knowledgebase to reflect the new `definition` field.
+
+### Fixed
+- **Calculation Logic**: Resolved a `TypeError` in `hd_features.py` where the recursive function `definition` was incorrectly shadowing the imported function name. `get_definition` is now correctly called.
+
 ## [1.2.1] - 2025-12-22
 
 ### Changed

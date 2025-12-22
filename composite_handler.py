@@ -153,7 +153,7 @@ def process_person_data(name, data):
             "profile": profile_desc,
             "defined_centers": defined_centers_names,
             "undefined_centers": undefined_centers_names,
-            "split": hd_constants.SPLIT_DB.get(str(hd_data["split"]), str(hd_data["split"])),
+            "definition": hd_constants.DEFINITION_DB.get(str(hd_data["definition"]), str(hd_data["definition"])),
             "channels": channels_list
         }
         

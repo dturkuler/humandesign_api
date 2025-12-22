@@ -239,7 +239,7 @@ if __name__ == "__main__":
       "Anja",
       "Head"
     ],
-    "split": "Single Definition",
+    "definition": "Single Definition",
     "variables": {
       "right_up": "right",
       "right_down": "left",

@@ -379,7 +379,7 @@ CHANNEL_DB = {
 				"27/50": "The Channel of Preservation (A Design of Custodianship)"
 }
 
-SPLIT_DB = {
+DEFINITION_DB = {
 				"0": "No Definition (Reflector)",  # Rare case, strictly for Reflectors
 				"1": "Single Definition",          # All defined centers are connected
 				"2": "Split Definition",           # Two separate areas of definition

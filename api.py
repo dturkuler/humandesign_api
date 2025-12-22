@@ -87,7 +87,7 @@ def calculate_hd(
             "profile": single_result[4],
             "active_chakras": single_result[7],
             "inactive_chakras": set(hd_constants.CHAKRA_LIST) - set(single_result[7]),
-            "split": "{}".format(single_result[5]),
+            "definition": "{}".format(single_result[5]),
             "variables": {
                 'right_up': 'right',
                 'right_down': 'left',
@@ -164,7 +164,7 @@ def get_bodygraph_image(
             "profile": single_result[4],
             "active_chakras": single_result[7],
             "inactive_chakras": set(hd_constants.CHAKRA_LIST) - set(single_result[7]),
-            "split": "{}".format(single_result[5]),
+            "definition": "{}".format(single_result[5]),
             "variables": {
                 'right_up': 'right',
                 'right_down': 'left',

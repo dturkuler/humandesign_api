@@ -270,7 +270,7 @@ Returns the image file directly (MIME type `image/png`, `image/svg+xml`, or `ima
       "SolarPlexus",
       "Heart"
     ],
-    "split": "Split Definition",
+    "definition": "Split Definition",
     "variables": {
       "right_up": "right",
       "right_down": "left",

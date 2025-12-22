@@ -42,7 +42,7 @@ class hd_features:
                     incarnation cross,
                     active chakras,
                     active channels,
-                    split
+                    definition
     extended hd_features:
                     composition charts
                     penta analysis
@@ -604,7 +604,7 @@ def get_channels_and_active_chakras(date_to_gate_dict,meaning=False):
 
     return active_channels_dict,set(active_chakras)
 
-def get_split(active_channels_dict, active_chakras):
+def get_definition(active_channels_dict, active_chakras):
     """
     Calculates the number of continuous energy islands (connected components).
     
@@ -795,7 +795,7 @@ def calc_single_hd_features(timestamp,report=False,channel_meaning=False,day_cha
             inc_cross = get_inc_cross(date_to_gate_dict)
             inc_cross_typ = inc_cross[-3:]
             profile = get_profile(date_to_gate_dict)
-            split = get_split(active_channels_dict,active_chakras)
+            definition = get_definition(active_channels_dict,active_chakras)
             variables = get_variables(date_to_gate_dict)
             bdate="{}".format(timestamp[:-2])
             cdate="{}".format(instance.create_date)
@@ -807,13 +807,13 @@ def calc_single_hd_features(timestamp,report=False,channel_meaning=False,day_cha
                 print("inc. cross: {}".format(inc_cross))
                 print("profile: {}/{}".format( *profile, sep='/'))
                 print("active chakras: {}".format(active_chakras))
-                print("split: {}".format(split))
+                print("definition: {}".format(definition))
                 print("variables: {}".format(variables))
                 display(pd.DataFrame(date_to_gate_dict))
                 display(pd.DataFrame(active_channels_dict))
          
     if day_chart_only==False:
-        return  typ,auth,inc_cross,inc_cross_typ,profile,split,date_to_gate_dict,active_chakras,active_channels_dict, bdate, cdate
+        return  typ,auth,inc_cross,inc_cross_typ,profile,definition,date_to_gate_dict,active_chakras,active_channels_dict, bdate, cdate
     else:
         return date_to_gate_dict
 
@@ -824,7 +824,7 @@ def unpack_single_features(single_result):
         single_result(tuple(lists)): hd_key features
     Return:
         return_dict(dict): keys: "typ","auth","inc_cross","profile"
-                                 "split,"date_to_gate_dict","active_chakra"
+                                 "definition","date_to_gate_dict","active_chakra"
                                  "active_channel"
     '''
     return_dict = {}
@@ -834,7 +834,7 @@ def unpack_single_features(single_result):
     return_dict["inc_cross"] = single_result[2]
     return_dict["inc_cross_typ"] = single_result[3]
     return_dict["profile"] = single_result[4]
-    return_dict["split"] = single_result[5]
+    return_dict["definition"] = single_result[5]
     return_dict["date_to_gate_dict"] = single_result[6]
     return_dict["active_chakra"] = single_result[7]
     return_dict["active_channel"] = single_result[8]
@@ -929,7 +929,7 @@ def unpack_mult_features(result,full=True):
         result(list): result from multi timestamp calculation (nested lists)
     Return:
         return_dict(dict): keys: "typ","auth","inc_cross","profile"
-                                 "split,"date_to_gate_dict","active_chakra"
+                                 "definition,"date_to_gate_dict","active_chakra"
                                  "active_channel"
     '''
     return_dict = {}
@@ -939,7 +939,7 @@ def unpack_mult_features(result,full=True):
     return_dict["inc_cross_list"] = [result[i][2] for i in range (len(result))]
     return_dict["inc_cross_typ_list"] = [result[i][3] for i in range (len(result))]
     return_dict["profile_list"] = [result[i][4] for i in range (len(result))]
-    return_dict["split_list"] = [result[i][5] for i in range (len(result))]
+    return_dict["definition_list"] = [result[i][5] for i in range (len(result))]
     return_dict["date_to_gate_dict"] = [result[i][6] for i in range (len(result))]
     return_dict["active_chakra_list"] = [result[i][7] for i in range (len(result))]
     return_dict["active_channel_list"] = [result[i][8] for i in range (len(result))]
@@ -1123,9 +1123,9 @@ class hd_composite:
                                                     date_to_gate_dict))
         typ = get_typ(active_channels_dict,active_chakras)
         auth = get_auth(active_chakras,active_channels_dict)
-        split = get_split(active_channels_dict,active_chakras)
+        definition = get_definition(active_channels_dict,active_chakras)
         planets = date_to_gate_dict
-        return active_channels_dict,active_chakras,typ,auth,split,planets
+        return active_channels_dict,active_chakras,typ,auth,definition,planets
 
     def calc_multi_comp_charts(self):
     
@@ -1151,7 +1151,7 @@ class hd_composite:
             result(list): result from multi timestamp calculation (nested lists)
         Return:
             return_dict(dict): keys: "typ","auth","inc_cross","profile"
-                                    "split,"date_to_gate_dict","active_chakra"
+                                    "definition","date_to_gate_dict","active_chakra"
                                     "active_channel"
         '''
         return_dict = {}
@@ -1161,7 +1161,7 @@ class hd_composite:
         return_dict["active_chakra_list"] = [self.result[i][1] for i in range (len(self.result))]
         return_dict["typ_list"] = [self.result[i][2] for i in range (len(self.result))]
         return_dict["auth_list"] = [self.result[i][3] for i in range (len(self.result))]
-        return_dict["split_list"] = [self.result[i][4] for i in range (len(self.result))]
+        return_dict["definition_list"] = [self.result[i][4] for i in range (len(self.result))]
         return_dict["planet_dict_list"] = [self.result[i][5] for i in range (len(self.result))]
 
         return return_dict
