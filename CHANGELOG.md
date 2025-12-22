@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-12-22
+
+### Changed
+- **Version Management**: Switched to `pyproject.toml` for version management, replacing `version.py`.
+- **API**: Updated `api.py` to read version dynamically from `pyproject.toml`.
+
 ## [1.2.0] - 2025-12-21
 
 ### Added

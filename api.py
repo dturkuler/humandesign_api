@@ -9,8 +9,16 @@ import chart
 from geocode import get_latitude_longitude
 from timezonefinder import TimezoneFinder
 import json
-from version import __version__
+import tomllib
+import os
 
+# --- Read version from pyproject.toml ---
+try:
+    with open(os.path.join(os.path.dirname(__file__), "pyproject.toml"), "rb") as f:
+        project_data = tomllib.load(f)
+        __version__ = project_data["project"]["version"]
+except FileNotFoundError:
+    __version__ = "0.0.0"
 
 app = FastAPI(title="Human Design API", version=__version__)
 

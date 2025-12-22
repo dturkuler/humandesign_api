@@ -92,7 +92,7 @@ The project is organized as follows:
 ├── requirements.txt
 ├── static/
 │   └── favicon.ico
-└── version.py
+└── pyproject.toml
 ```
 
 *   **`api.py`**: The main FastAPI application. Defines endpoints, handles requests, and integrates calculation and visualization logic.
@@ -107,7 +107,7 @@ The project is organized as follows:
 *   **`layout_data.json`**: Contains precise SVG paths and coordinates for rendering the BodyGraph.
 *   **`openapi.yaml`**: The OpenAPI 3.0 specification file for the API.
 *   **`requirements.txt`**: Python dependencies.
-*   **`version.py`**: Single source of truth for the project version.
+*   **`pyproject.toml`**: Standard configuration file for project metadata and dependencies, including the single source of truth for the project version.
 *   **`CHANGELOG.md`**: Records all notable changes to the project.
 *   **`LICENSE`**: Project license.
 *   **`README.md`**: Project documentation (this file).
