@@ -426,7 +426,7 @@ def get_auth(active_chakras,active_channels_dict):
     return auth
 def get_typ(active_channels_dict, active_chakras): 
     ''' 
-    get Energie-Type from active channels 
+    get Energy-Type from active channels 
     Args:
         active_channels_dict(dict): all active channels, keys: ["label","planets","gate","ch_gate"]
         active_chakras(list/set): list of defined centers (e.g. ["SL", "RT", "GC"...])
@@ -604,33 +604,53 @@ def get_channels_and_active_chakras(date_to_gate_dict,meaning=False):
 
     return active_channels_dict,set(active_chakras)
 
-def get_split(active_channels_dict,active_chakras):
+def get_split(active_channels_dict, active_chakras):
     """
-    calculate split from active channels and chakras
-    if 
-        connection is circular -> no split -> return:0
-        connection is bicircular-> no split -> return:-1
-        all chakras are linear connected-> no split ->return:1
-        two connected groups-> split -> return:2,
-        three connect groups ....
-    Args:
-        active_channels_dict(dict): all active channels, keys: ["label","planets","gate","ch_gate"]
-        active_chakras(set): active chakras
-    Return:
-        split(int): meaning see above
-    """
-    #split, remove duplicate tuples (gate,ch_gate chakras) in channels 
-    gate_chakra = active_channels_dict["gate_chakra"]
-    ch_gate_chakra = active_channels_dict["ch_gate_chakra"]
-    sorted_chakras = [sorted((gate_chakra[i],ch_gate_chakra[i])) 
-                      for i in range(len(active_channels_dict["gate_chakra"]))]
-    unique_mask = np.unique(sorted_chakras,axis=0,return_index=True)[1]
-    dupl_mask = np.zeros(len(sorted_chakras),dtype=bool)
-    dupl_mask[unique_mask]=True
-    len_no_dupl_channel = sum(dupl_mask)
-    split = len(active_chakras) - len_no_dupl_channel
+    Calculates the number of continuous energy islands (connected components).
     
-    return  split
+    Returns:
+        0: No Definition (Reflector)
+        1: Single Definition (Any topology: linear or cyclic)
+        2: Split Definition
+        3: Triple Split
+        4: Quadruple Split
+    """
+    # 1. Handle Reflector (No defined centers)
+    if not active_chakras:
+        return 0
+
+    # 2. Build Adjacency List (Map of connections)
+    # Graph structure: { 'Sacral': {'Root', 'G_Center'}, ... }
+    graph = {chakra: set() for chakra in active_chakras}
+    
+    gates = active_channels_dict["gate_chakra"]
+    ch_gates = active_channels_dict["ch_gate_chakra"]
+    
+    for c1, c2 in zip(gates, ch_gates):
+        if c1 in graph and c2 in graph:
+            graph[c1].add(c2)
+            graph[c2].add(c1)
+
+    # 3. Count Connected Components (Islands)
+    visited = set()
+    islands = 0
+
+    for chakra in active_chakras:
+        if chakra not in visited:
+            # Found a new island, start exploring it
+            islands += 1
+            stack = [chakra]
+            visited.add(chakra)
+            
+            # Traverse the entire island
+            while stack:
+                node = stack.pop()
+                for neighbor in graph[node]:
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        stack.append(neighbor)
+                        
+    return islands
     
 def calc_full_gates_chakra_dict(gates_chakra_dict):
     ''' 
@@ -782,7 +802,7 @@ def calc_single_hd_features(timestamp,report=False,channel_meaning=False,day_cha
             if report == True:
                 print("birth date: "+ bdate)
                 print("create date: " + cdate)
-                print("energie-type: {}".format(typ))
+                print("energy-type: {}".format(typ))
                 print("inner authority: {}".format(auth))
                 print("inc. cross: {}".format(inc_cross))
                 print("profile: {}/{}".format( *profile, sep='/'))

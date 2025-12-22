@@ -17,7 +17,10 @@ Whether you are building a mobile app, a professional dashboard, or a personal r
 *   **FastAPI Backend**: High-performance, async-ready Python web framework.
 *   **Precise Calculations**: Uses `pyswisseph` for Swiss Ephemeris accuracy and `geopy`/`timezonefinder` for reliable location and timezone resolution.
 *   **BodyGraph Visualization**: Generates high-fidelity, transparent BodyGraph charts in PNG, SVG, and JPG formats via the `/bodygraph` endpoint.
+*   **Composite Analysis**: Calculates relationship mechanics (connection channels, centers) between multiple people via the `/compmatrix` endpoint.
+*   **Transit Analysis**: Provides Daily Weather and Solar Return (Yearly Theme) calculations for advanced forecasting.
 *   **Comprehensive Chart Data**: Returns Energy Type, Strategy, Authority, Profile, Incarnation Cross, Variables, and full Planetary/Gate positions (Gate, Line, Color, Tone, Base).
+*   **Robust Validation**: Strict input validation using Pydantic, supporting flexible data types (integers or strings) for ease of integration.
 *   **Docker Ready**: Simple deployment with Docker and Docker Compose.
 *   **OpenAPI Specification**: Fully documented API with `openapi.yaml` and interactive Swagger UI.
 *   **Authentication**: Secure access via Bearer token.
@@ -77,6 +80,7 @@ The project is organized as follows:
 ├── README.md
 ├── api.py
 ├── chart.py
+├── composite_handler.py
 ├── convertJSON.py
 ├── docker-compose.yml
 ├── Dockerfile
@@ -93,6 +97,7 @@ The project is organized as follows:
 
 *   **`api.py`**: The main FastAPI application. Defines endpoints, handles requests, and integrates calculation and visualization logic.
 *   **`chart.py`**:  Generates high-fidelity BodyGraph images (PNG, SVG, JPG) using `matplotlib` and extracted vector geometry.
+*   **`composite_handler.py`**: Encapsulates logic for composite chart calculations, including input processing and feature enrichment.
 *   **`convertJSON.py`**: Utility functions for formatting calculation results into structured JSON.
 *   **`docker-compose.yml`**: Orchestrates the Docker service for easy deployment.
 *   **`Dockerfile`**: Defines the container environment for the API.
@@ -162,6 +167,50 @@ Calculates the "Yearly Theme" (Solar Return Analysis).
 *   Birth Data (year, month, day, hour, minute, place)
 *   Offset (`sr_year_offset`): Years after birth (e.g., 1 for 1st birthday return).
 
+### `POST /compmatrix`
+
+Calculates the composite Human Design matrix for two or more people.
+
+#### Request Body
+The body should be a dictionary where keys are person identifiers (e.g., `person1`, `person2`) and values are their birth details.
+
+**Flexible Inputs**: Numeric fields (`year`, `month`, `day`, `hour`, `minute`) accept both **integers** (e.g., `1990`) and **strings** (e.g., `"1990"`, `"00"`).
+
+```json
+{
+  "person1": {
+    "place": "Berlin, Germany",
+    "year": 1985,
+    "month": 6,
+    "day": 15,
+    "hour": 14,
+    "minute": "00"
+  },
+  "person2": {
+    "place": "Munich, Germany",
+    "year": "1988",
+    "month": 11,
+    "day": 22,
+    "hour": 9,
+    "minute": 15
+  }
+}
+```
+
+#### Authentication
+Requires Bearer token in `Authorization` header.
+
+#### Example Response
+Returns a comprehensive analysis including individual profiles and the composite connection type (e.g., "Split Definition", "Work to do").
+
+```bash
+curl -X 'POST' \
+  'http://localhost:9021/compmatrix' \
+  -H 'Authorization: Bearer your_token' \
+  -H 'Content-Type: application/json' \
+  -d '{...}'
+```
+
 #### Parameters
 
 | Name     | Type    | Description                                     | Required |
@@ -204,7 +253,7 @@ Returns the image file directly (MIME type `image/png`, `image/svg+xml`, or `ima
   "general": {
     "birth_date": "(1990, 7, 15, 14, 30, 0)",
     "create_date": "(1990, 4, 20, 17, 2, 20.0)",
-    "energie_type": "MANIFESTING GENERATOR",
+    "energy_type": "MANIFESTING GENERATOR",
     "inner_authority": "Sacral",
     "inc_cross": "The Right Angle Cross of the Sleeping Phoenix (2)",
     "profile": "2/4: Hermit Opportunist",

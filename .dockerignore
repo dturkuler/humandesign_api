@@ -1,12 +1,48 @@
-.git
-__pycache__
+# Source Control
+.git/
+.gitignore
+
+# Python
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-env
-venv
-ENV
-env.txt
-venv.txt
-.backup
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment
+.env
+.env.*
+.env_example
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+.docker_README.md
+
+# Documentation
+.docs/
+.backup/
+README.md
+CHANGELOG.md
+LICENSE
+
+# Tests and Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+test_*.py
+
+# Local Artifacts
+*.log
+*.sqlite

@@ -1,598 +1,485 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Human Design API
-  description: API for calculating Human Design charts based on birth data.
-  version: 1.1.0
-servers:
-  - url: http://localhost:8000
-    description: Local development server
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    # --- General Section Schema ---
-    GeneralInfo:
-      type: object
-      properties:
-        birth_date:
-          type: string
-          description: Formatted birth date
-          example: "01. Jan 1980 12:00:00"
-        create_date:
-          type: string
-          description: Date of calculation
-          example: "2023-10-27 10:00:00"
-        energie_type:
-          type: string
-          description: The Energy Type of the chart
-          example: "Generator"
-        strategy:
-          type: string
-          description: Strategy associated with the Energy Type
-          example: "To Respond"
-        signature:
-          type: string
-          description: Signature goal of the Energy Type
-          example: "Satisfaction"
-        not_self:
-          type: string
-          description: Not-Self theme
-          example: "Frustration"
-        aura:
-          type: string
-          description: Aura description
-          example: "Open and Enveloping"
-        inner_authority:
-          type: string
-          description: Inner Authority
-          example: "Sacral"
-        inc_cross:
-          type: string
-          description: Incarnation Cross
-          example: "The Right Angle Cross of The Sleeping Phoenix (55/59 | 34/20)"
-        profile:
-          type: string
-          description: Profile lines
-          example: "4/6: Opportunist Role Model"
-        defined_centers:
-          type: array
-          items:
-            type: string
-          description: List of defined centers
-          example: ["Sacral", "Root"]
-        undefined_centers:
-          type: array
-          items:
-            type: string
-          description: List of undefined centers
-          example: ["Head", "Ajna", "Throat", "G Center", "Heart", "Spleen", "Solar Plexus"]
-        split:
-          type: string
-          description: Definition split definition
-          example: "Single Definition"
-        variables:
-          type: object
-          properties:
-            right_up:
-              type: string
-              example: "right"
-            right_down:
-              type: string
-              example: "left"
-            left_up:
-              type: string
-              example: "right"
-            left_down:
-              type: string
-              example: "right"
-      required:
-        - birth_date
-        - energie_type
-        - strategy
-        - inner_authority
-        - inc_cross
-        - profile
-
-    # --- Gates Section Schema ---
-    PlanetData:
-      type: object
-      properties:
-        Planet:
-          type: string
-          description: Name of the planet or celestial body
-          example: "Sun"
-        Lon:
-          type: number
-          format: float
-          description: Longitude of the planet
-          example: 225.5
-        Gate:
-          type: integer
-          description: Gate number
-          example: 55
-        Line:
-          type: integer
-          description: Line number
-          example: 4
-        Color:
-          type: integer
-          description: Color number
-          example: 2
-        Tone:
-          type: integer
-          description: Tone number
-          example: 1
-        Base:
-          type: integer
-          description: Base number
-          example: 5
-        Ch_Gate:
-          type: integer
-          description: Channel gate
-          example: 59
-      required:
-        - Planet
-        - Gate
-        - Line
-
-    GatesCollection:
-      type: object
-      properties:
-        Planets:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlanetData'
-
-    GatesInfo:
-      type: object
-      properties:
-        prs:
-          $ref: '#/components/schemas/GatesCollection'
-          description: Personality (Black) side data
-        des:
-          $ref: '#/components/schemas/GatesCollection'
-          description: Design (Red) side data
-
-    # --- Channels Section Schema ---
-    ChannelData:
-      type: object
-      properties:
-        channel:
-          type: string
-          description: Name of the active channel
-          example: "34/20: The Channel of Charisma"
-
-    ChannelsInfo:
-      type: object
-      properties:
-        Channels:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChannelData'
-
-    # --- Main Response Schema ---
-    CalculationResponse:
-      type: object
-      properties:
-        general:
-          $ref: '#/components/schemas/GeneralInfo'
-        gates:
-          $ref: '#/components/schemas/GatesInfo'
-        channels:
-          $ref: '#/components/schemas/ChannelsInfo'
-      required:
-        - general
-        - gates
-        - channels
-
-    ErrorResponse:
-      type: object
-      properties:
-        detail:
-          type: string
-          example: "Invalid or missing authentication token."
-
-    # --- Transit Section Schema ---
-    TransitAnalysis:
-      type: object
-      properties:
-        transit_date:
-          type: array
-          items: 
-             type: integer
-          description: Timestamp tuple of the transit
-        composite_type:
-          type: string
-          description: Energy Type of the composite chart
-          example: "Generator"
-        composite_authority:
-          type: string
-          description: Authority of the composite chart
-          example: "Emotional"
-        new_defined_channels:
-          type: array
-          items:
-            type: array
-            items:
-               type: integer
-          description: List of newly defined channels (tuples of gate numbers)
-        new_channel_meanings:
-          type: array
-          items:
-            type: string
-          description: Meanings of the newly defined channels
-        new_defined_centers:
-          type: array
-          items:
-            type: string
-          description: List of newly defined centers
-        total_defined_centers:
-          type: integer
-          description: Total number of defined centers in the composite
-      required:
-        - transit_date
-        - composite_type
-        - composite_authority
-
-    SolarReturnResponse:
-      type: object
-      properties:
-        solar_return_year:
-          type: integer
-          description: The offset year requested
-        solar_return_utc_date:
-          type: string
-          description: The calculated UTC date of the Solar Return
-          example: "1986-10-26 16:51:19"
-        sr_chart_analysis:
-          $ref: '#/components/schemas/TransitAnalysis'
-
-    DailyTransitResponse:
-      type: object
-      properties:
-        transit_date:
-          type: string
-          example: "2024-12-20"
-        transit_time_at_birth_location:
-          type: string
-          example: "12:00"
-        analysis:
-          $ref: '#/components/schemas/TransitAnalysis'
-
-security:
-  - bearerAuth: []
-
+  version: 1.2.0
 paths:
   /calculate:
     get:
-      summary: Calculate Human Design Chart
-      description: |
-        Calculates the Human Design chart based on the provided birth date, time, and location.
-        Requires a valid API token in the Authorization header.
-      tags:
-        - Calculation
+      summary: Calculate Hd
+      operationId: calculate_hd_calculate_get
+      security:
+      - HTTPBearer: []
       parameters:
-        - in: query
-          name: year
-          schema:
-            type: integer
-            example: 1985
-          required: true
-          description: Birth year (4 digits)
-        - in: query
-          name: month
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 12
-            example: 5
-          required: true
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth year
+          title: Year
+        description: Birth year
+      - name: month
+        in: query
+        required: true
+        schema:
+          type: integer
           description: Birth month
-        - in: query
-          name: day
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 31
-            example: 15
-          required: true
+          title: Month
+        description: Birth month
+      - name: day
+        in: query
+        required: true
+        schema:
+          type: integer
           description: Birth day
-        - in: query
-          name: hour
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 23
-            example: 14
-          required: true
-          description: Birth hour (0-23)
-        - in: query
-          name: minute
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 59
-            example: 30
-          required: true
+          title: Day
+        description: Birth day
+      - name: hour
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth hour
+          title: Hour
+        description: Birth hour
+      - name: minute
+        in: query
+        required: true
+        schema:
+          type: integer
           description: Birth minute
-        - in: query
-          name: second
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 59
-            default: 0
-            example: 0
-          required: false
-          description: Birth second
-        - in: query
-          name: place
-          schema:
-            type: string
-            example: "New York, USA"
-          required: true
-          description: Birth place (City, Country)
+          title: Minute
+        description: Birth minute
+      - name: second
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth second (optional, default 0)
+          default: 0
+          title: Second
+        description: Birth second (optional, default 0)
+      - name: place
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Birth place (city, country)
+          title: Place
+        description: Birth place (city, country)
       responses:
         '200':
-          description: Successful calculation
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CalculationResponse'
-        '400':
-          description: Bad Request (e.g., Geocoding failed)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                detail: "Geocoding failed for place: 'Unknown City'. Please check the place name or try a different format."
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                detail: "Invalid or missing authentication token."
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                detail: "Error calculating Human Design features: ..."
-
+                $ref: '#/components/schemas/HTTPValidationError'
   /bodygraph:
     get:
-      summary: Generate BodyGraph Image
-      description: |
-        Generates a visual bodygraph chart based on the provided birth data.
-        Returns an image in PNG (transparent), SVG, or JPG format.
-      tags:
-        - Visualization
+      summary: Get Bodygraph Image
+      operationId: get_bodygraph_image_bodygraph_get
+      security:
+      - HTTPBearer: []
       parameters:
-        - in: query
-          name: year
-          schema:
-            type: integer
-            example: 1985
-          required: true
-        - in: query
-          name: month
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 12
-            example: 5
-          required: true
-        - in: query
-          name: day
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 31
-            example: 15
-          required: true
-        - in: query
-          name: hour
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 23
-            example: 14
-          required: true
-        - in: query
-          name: minute
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 59
-            example: 30
-          required: true
-        - in: query
-          name: second
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 59
-            default: 0
-            example: 0
-          required: false
-        - in: query
-          name: place
-          schema:
-            type: string
-            example: "New York, USA"
-          required: true
-        - in: query
-          name: fmt
-          schema:
-            type: string
-            enum: [png, svg, jpg, jpeg]
-            default: png
-            example: png
-          required: false
-          description: Output image format.
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth year
+          title: Year
+        description: Birth year
+      - name: month
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth month
+          title: Month
+        description: Birth month
+      - name: day
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth day
+          title: Day
+        description: Birth day
+      - name: hour
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth hour
+          title: Hour
+        description: Birth hour
+      - name: minute
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth minute
+          title: Minute
+        description: Birth minute
+      - name: second
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth second (optional, default 0)
+          default: 0
+          title: Second
+        description: Birth second (optional, default 0)
+      - name: place
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Birth place (city, country)
+          title: Place
+        description: Birth place (city, country)
+      - name: fmt
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Image format: png, svg, jpg/jpeg'
+          default: png
+          title: Fmt
+        description: 'Image format: png, svg, jpg/jpeg'
       responses:
         '200':
-          description: Successful generation
+          description: Successful Response
           content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-            image/svg+xml:
-              schema:
-                type: string
-                format: binary
-            image/jpeg:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Bad Request (e.g., Geocoding failed)
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal Server Error
-
-  /transits/daily:
-    get:
-      summary: Get Daily Transit Analysis
-      description: |
-        Calculates the "Weather of the Day" by comparing the user's natal chart with the transit chart for a specific date.
-        Returns the composite analysis, highlighting temporary influences.
-      tags:
-        - AuraCycle
-      parameters:
-        - in: query
-          name: year
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: month
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: day
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: hour
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: minute
-          schema:
-            type: integer
-            default: 0
-          required: false
-        - in: query
-          name: second
-          schema:
-            type: integer
-            default: 0
-          required: false
-        - in: query
-          name: place
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: transit_year
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: transit_month
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: transit_day
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: Successful analysis
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DailyTransitResponse'
-        '401':
-          description: Unauthorized
-
+                $ref: '#/components/schemas/HTTPValidationError'
   /transits/solar_return:
     get:
-      summary: Get Solar Return Analysis
-      description: |
-        Calculates the Solar Return date for a specific year (offset from birth) and analyzing the Yearly Theme.
-        Returns the SR date and the composite analysis of Vital/SR charts.
-      tags:
-        - AuraCycle
+      summary: Get Solar Return
+      operationId: get_solar_return_transits_solar_return_get
+      security:
+      - HTTPBearer: []
       parameters:
-        - in: query
-          name: year
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: month
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: day
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: hour
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: minute
-          schema:
-            type: integer
-            default: 0
-          required: false
-        - in: query
-          name: second
-          schema:
-            type: integer
-            default: 0
-          required: false
-        - in: query
-          name: place
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: sr_year_offset
-          schema:
-            type: integer
-            default: 0
-            description: 0 for birth year return (not useful), 1 for 1st return (age 1), etc.
-          required: false
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth year
+          title: Year
+        description: Birth year
+      - name: month
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth month
+          title: Month
+        description: Birth month
+      - name: day
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth day
+          title: Day
+        description: Birth day
+      - name: hour
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth hour
+          title: Hour
+        description: Birth hour
+      - name: minute
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth minute (default 0)
+          default: 0
+          title: Minute
+        description: Birth minute (default 0)
+      - name: second
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth second (optional, default 0)
+          default: 0
+          title: Second
+        description: Birth second (optional, default 0)
+      - name: place
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Birth place (city, country)
+          title: Place
+        description: Birth place (city, country)
+      - name: sr_year_offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Calculate Solar Return for X years after birth. 0 is the current
+            SR.
+          default: 0
+          title: Sr Year Offset
+        description: Calculate Solar Return for X years after birth. 0 is the current
+          SR.
       responses:
         '200':
-          description: Successful analysis
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SolarReturnResponse'
-        '401':
-          description: Unauthorized
+                $ref: '#/components/schemas/HTTPValidationError'
+  /transits/daily:
+    get:
+      summary: Get Daily Transit
+      operationId: get_daily_transit_transits_daily_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth year
+          title: Year
+        description: Birth year
+      - name: month
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth month
+          title: Month
+        description: Birth month
+      - name: day
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth day
+          title: Day
+        description: Birth day
+      - name: hour
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Birth hour
+          title: Hour
+        description: Birth hour
+      - name: minute
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth minute (default 0)
+          default: 0
+          title: Minute
+        description: Birth minute (default 0)
+      - name: second
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Birth second (optional, default 0)
+          default: 0
+          title: Second
+        description: Birth second (optional, default 0)
+      - name: place
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Birth place (city, country)
+          title: Place
+        description: Birth place (city, country)
+      - name: transit_year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Transit year to analyze
+          title: Transit Year
+        description: Transit year to analyze
+      - name: transit_month
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Transit month to analyze
+          title: Transit Month
+        description: Transit month to analyze
+      - name: transit_day
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Transit day to analyze
+          title: Transit Day
+        description: Transit day to analyze
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /compmatrix:
+    post:
+      summary: Get Composite Matrix
+      description: "Calculate Human Design features for multiple people and analyze\
+        \ their composite combinations (matrix).\n\nInput:\n{\n    \"person1\": {\
+        \ \"place\": \"City, Country\", \"year\": 1990, \"month\": 1, \"day\": 1,\
+        \ \"hour\": 12, \"minute\": 0 },\n    \"person2\": { ... }\n}"
+      operationId: get_composite_matrix_compmatrix_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties:
+                $ref: '#/components/schemas/PersonInput'
+              type: object
+              title: Inputs
+              description: Dictionary of people where keys are names (e.g., person1,
+                person2) and values are birth details.
+            example:
+              person1:
+                place: Berlin, Germany
+                year: 1985
+                month: 6
+                day: 15
+                hour: 14
+                minute: 30
+              person2:
+                place: Munich, Germany
+                year: 1988
+                month: 11
+                day: 22
+                hour: 9
+                minute: 15
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PersonInput:
+      properties:
+        place:
+          type: string
+          minLength: 1
+          title: Place
+          description: Place of birth (City, Country)
+        year:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Year
+          description: Birth year (1800-2100)
+        month:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Month
+          description: Birth month (1-12)
+        day:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Day
+          description: Birth day (1-31)
+        hour:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Hour
+          description: Birth hour (0-23)
+        minute:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Minute
+          description: Birth minute (0-59)
+      type: object
+      required:
+      - place
+      - year
+      - month
+      - day
+      - hour
+      - minute
+      title: PersonInput
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

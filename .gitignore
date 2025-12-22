@@ -21,7 +21,6 @@ venv/
 docker-compose.override.yml
 *.swp
 *.swo
-.docker_README.md
 
 # Test and build artifacts
 .pytest_cache/
@@ -33,3 +32,7 @@ Thumbs.db
 
 # backup files
 .backup/
+
+# docs
+.docs/
+

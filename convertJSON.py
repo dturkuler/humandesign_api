@@ -77,7 +77,7 @@ def get_profile_name(profile_list):
 
 def general(data):
     # 1. Get the Energy Type (Calculated previously)
-    e_type = data.get('energie_type', 'Unknown')
+    e_type = data.get('energy_type', 'Unknown')
     
     # 2. Get the specific details for this Type from our new Map
     # We use .get() to safely default to "Unknown" if the type isn't found
@@ -89,7 +89,7 @@ def general(data):
         "create_date": data['create_date'],
         
         # --- Type Info ---
-        "energie_type": e_type,
+        "energy_type": e_type,
         "strategy": type_details['strategy'],     # <--- NEW
         "signature": type_details['signature'],   # <--- NEW (Goal)
         "not_self": type_details['not_self'],     # <--- NEW (Warning)

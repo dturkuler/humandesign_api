@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy the requirements file into the container
 COPY requirements.txt .
-# Install Python dependencies into a wheelhouse for efficient caching
-RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+# Install dependencies directly into a specific prefix
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # Stage 2: Runtime
 # Use a slim Python image as the base for the final application
@@ -26,10 +26,8 @@ FROM python:3.12-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy only the necessary runtime dependencies from the builder stage
-COPY --from=builder /wheels /wheels
-# Install the pre-built Python dependencies from the wheelhouse
-RUN pip install --no-cache-dir /wheels/*
+# Copy the installed dependencies from the builder stage
+COPY --from=builder /install /usr/local
 
 # Copy all application files into the container
 COPY . /app

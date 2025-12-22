@@ -218,7 +218,7 @@ if __name__ == "__main__":
   "general": {
     "birth_date": "(1968, 2, 21, 11, 0)",
     "create_date": "(1967, 11, 26, 17, 14)",
-    "energie_type": "Manifesting Generator",
+    "energy_type": "Manifesting Generator",
     "strategy": "Wait to Respond",
     "signature": "Satisfaction",
     "not_self": "Frustration & Anger",

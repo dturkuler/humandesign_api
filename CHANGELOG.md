@@ -5,7 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+
 ## [Unreleased]
+
+## [1.2.0] - 2025-12-21
+
+### Added
+- **New Endpoint**: `POST /compmatrix` for composite chart analysis with robust validation.
+- **Enriched Composite Analysis**: `run_composite_combinations.py` now outputs comprehensive Human Design profiles (Type, Strategy, Aura, Channels) for each person involved.
+- **Input Validation**: `api.py` now implements strict Pydantic validation (ranges, dates) and supports flexible string inputs (e.g., `minute="00"`) for numeric fields.
+- **Structured JSON Output**: Composite analysis results are now normalized with separate `persons` dictionaries and `combinations` lists.
+- **Geocoding & Timezone**: Integrated automatic location-to-coordinates and timezone resolution for input data.
+- **Descriptive Mappings**: Output now utilizes full descriptive names for Centers, Authorities, and Incarnation Crosses instead of internal codes.
+
+### Fixed
+- **JSON Serialization**: Implemented custom `NumpyEncoder` to resolve `TypeError: Object of type int64 is not JSON serializable` when handling HD calculation results.
 
 ## [1.1.0] - 2025-12-19
 
