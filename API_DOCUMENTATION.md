@@ -80,6 +80,8 @@ curl -X GET "http://localhost:8000/bodygraph?place=London,UK&year=1990&month=1&d
   --output chart.png
 ```
 
+![alt text](static/bodygraph_sample.png)
+
 ---
 
 ## 2. Transit Analysis
