@@ -18,6 +18,7 @@ Whether you are building a mobile app, a professional dashboard, or a personal r
 *   **Precise Calculations**: Uses `pyswisseph` for Swiss Ephemeris accuracy and `geopy`/`timezonefinder` for reliable location and timezone resolution.
 *   **BodyGraph Visualization**: Generates high-fidelity, transparent BodyGraph charts in PNG, SVG, and JPG formats via the `/bodygraph` endpoint.
 *   **Composite Analysis**: Calculates relationship mechanics (connection channels, centers) between multiple people via the `/compmatrix` endpoint.
+*   **Detailed Pairwise Analysis**: Calculates granular relationship details (new/duplicated channels) for exactly two people via the `/analyze/composite` endpoint.
 *   **Transit Analysis**: Provides Daily Weather and Solar Return (Yearly Theme) calculations for advanced forecasting.
 *   **Penta Analysis**: Calculates Group Dynamics (3-5 people) via the `/analyze/penta` endpoint, revealing active group energy fields.
 *   **Comprehensive Chart Data**: Returns Energy Type, Strategy, Authority, Profile, Incarnation Cross, Variables, and full Planetary/Gate positions (Gate, Line, Color, Tone, Base).
@@ -226,7 +227,42 @@ The project is organized as follows:
  
  ---
  
- ### 5. `POST /compmatrix`
+ ### 5. `POST /analyze/composite`
+ 
+ Calculates detailed pairwise composite analysis for exactly two people.
+ 
+ #### Request Body
+ ```json
+ {
+   "person1": { "place": "Berlin, Germany", "year": 1985, "month": 6, "day": 15, "hour": 14, "minute": 30 },
+   "person2": { "place": "Munich, Germany", "year": 1988, "month": 11, "day": 22, "hour": 9, "minute": 15 }
+ }
+ ```
+ 
+ #### Example Request
+ ```bash
+ curl -X POST "http://localhost:9021/analyze/composite" \
+      -H "Authorization: Bearer your_secret_token_here" \
+      -H "Content-Type: application/json" \
+      -d @payload.json
+ ```
+ 
+ #### Response
+ ```json
+ {
+   "participants": ["person1", "person2"],
+   "new_channels": [
+     { "gate": 59, "ch_gate": 6, "meaning": ["Mating", "A d. focused on reproduction"] }
+   ],
+   "duplicated_channels": [],
+   "new_chakras": [{ "code": "SP", "name": "SolarPlexus" }],
+   "composite_chakras": [{ "code": "AA", "name": "Ajna" }, ...]
+ }
+ ```
+ 
+ ---
+ 
+ ### 6. `POST /compmatrix`
  
  Calculates the composite Human Design matrix (Relationship Mechanics) for two or more people.
  

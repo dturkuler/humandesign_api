@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Human Design API
-  version: 1.2.5
+  version: 1.2.6
 paths:
   /calculate:
     get:
@@ -353,6 +353,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /analyze/composite:
+    post:
+      summary: Analyze Composite
+      description: "Calculate Composite Chart features for exactly 2 people.\nExposes detailed pairwise composite logic including new and duplicated channels/chakras.\n\nInput:\n{\n    \"person1\": { ... },\n    \"person2\": { ... }\n}"
+      operationId: analyze_composite_analyze_composite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties:
+                $ref: '#/components/schemas/PersonInput'
+              type: object
+              title: Inputs
+              description: Dictionary of exactly 2 people for Composite analysis.
+            example:
+              person1:
+                place: Berlin, Germany
+                year: 1985
+                month: 6
+                day: 15
+                hour: 14
+                minute: 30
+              person2:
+                place: Munich, Germany
+                year: 1988
+                month: 11
+                day: 22
+                hour: 9
+                minute: 15
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
   /compmatrix:
     post:
       summary: Get Composite Matrix
