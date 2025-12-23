@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2025-12-23
+
+### Added
+- **Modularization**: Refactored `hd_features.py` into a modular `humandesign.features` package structure (`core`, `attributes`, `mechanics`).
+- **Regression Testing**: Added `tests/test_hd_features_snapshot.py` to ensure logic parity across refactors.
+- **Docker**: Verified and optimized Docker build with the new package structure.
+- **Cleanup**: Removed legacy artifacts and unnecessary files (e.g., `humandesign_api.egg-info`), ensuring a clean distribution state.
+- **Optimization**: Updated `.gitignore` to exclude build artifacts (`*.egg-info`).
+
+### Changed
+- **Codebase**: Moved core calculation logic from monolithic file to `src/humandesign/features/`.
+- **Imports**: Updated all internal references to use the new `humandesign.features` namespace.
+- **Testing**: Renamed regression test to `tests/test_core_calculations.py` to reflect its permanent role in the test suite.
+
+
 ## [1.4.0] - 2025-12-23
 
 ### Added

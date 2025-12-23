@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, HTTPException, Depends
 from timezonefinder import TimezoneFinder
-from .. import hd_features as hd
+from .. import features as hd
 from ..services.geolocation import get_latitude_longitude
 from ..dependencies import verify_token
 from ..utils.calculations import process_transit_data

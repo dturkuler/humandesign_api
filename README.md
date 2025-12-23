@@ -327,7 +327,7 @@ The project is organized as follows:
  
  ## API Documentation
  
- For comprehensive details, industrial-standard references, and runnable examples, please refer to the [API_DOCUMENTATION.md](API_DOCUMENTATION.md) file.
+ For comprehensive details, industrial-standard references, and runnable examples, please refer to the [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md) file.
  
  The project includes an OpenAPI 3.0 specification file named `openapi.yaml`. This file describes the API endpoints, request parameters, responses, and schemas in a standard format.
  
@@ -349,6 +349,6 @@ The project is organized as follows:
     *   Tools like `openapi-generator` can use this file to generate API client code for various programming languages (e.g., Python, JavaScript, Java).
 
 ---
-*Documentation generated for Human Design API v1.4.0*
+*Documentation generated for Human Design API v1.5.0*
 
 

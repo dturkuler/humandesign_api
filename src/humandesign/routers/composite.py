@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from typing import Dict
 from timezonefinder import TimezoneFinder
-from .. import hd_features as hd
+from .. import features as hd
 from .. import hd_constants
 from ..services.geolocation import get_latitude_longitude
 from ..dependencies import verify_token

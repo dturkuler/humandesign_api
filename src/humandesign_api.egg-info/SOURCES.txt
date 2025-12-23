@@ -1,10 +1,16 @@
 LICENSE
 README.md
 pyproject.toml
+src/humandesign/__init__.py
 src/humandesign/api.py
 src/humandesign/dependencies.py
 src/humandesign/hd_constants.py
-src/humandesign/hd_features.py
+src/humandesign/data/__init__.py
+src/humandesign/data/layout_data.json
+src/humandesign/features/__init__.py
+src/humandesign/features/attributes.py
+src/humandesign/features/core.py
+src/humandesign/features/mechanics.py
 src/humandesign/routers/composite.py
 src/humandesign/routers/general.py
 src/humandesign/routers/transits.py
@@ -21,3 +27,4 @@ src/humandesign_api.egg-info/dependency_links.txt
 src/humandesign_api.egg-info/requires.txt
 src/humandesign_api.egg-info/top_level.txt
 tests/test_api_smoke.py
+tests/test_core_calculations.py

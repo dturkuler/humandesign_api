@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse, Response
 from timezonefinder import TimezoneFinder
 import json
 
-from .. import hd_features as hd
+from .. import features as hd
 from .. import hd_constants
 from ..utils import serialization as cj
 from ..services import chart_renderer as chart

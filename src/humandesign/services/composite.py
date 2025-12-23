@@ -1,4 +1,4 @@
-from .. import hd_features as hd
+from .. import features as hd
 from .. import hd_constants
 import pandas as pd
 import numpy as np

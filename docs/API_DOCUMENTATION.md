@@ -80,7 +80,7 @@ curl -X GET "http://localhost:8000/bodygraph?place=London,UK&year=1990&month=1&d
   --output chart.png
 ```
 
-<img src="static/bodygraph_sample.png" alt="alt text" width="50%" />
+<img src="../src/humandesign/static/bodygraph_sample.png" alt="alt text" width="50%" />
 
 ---
 
@@ -206,4 +206,4 @@ curl -X POST "http://localhost:8000/analyze/penta" \
 | `500` | Internal Server Error |
 
 ---
-*Documentation generated for Human Design API v1.3.0*
+*Documentation generated for Human Design API v1.5.0*

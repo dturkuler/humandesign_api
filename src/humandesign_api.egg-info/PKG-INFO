@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: humandesign-api
-Version: 1.3.1
+Version: 1.5.0
 Summary: Human Design API
 Author-email: Your Name <your.email@example.com>
 Requires-Python: >=3.12
@@ -213,7 +213,7 @@ The project is organized as follows:
       -H "Authorization: Bearer your_secret_token_here" \
       -o bodygraph.png
  ```
- <img src="static/bodygraph_sample.png" alt="alt text" width="50%" />
+ <img src="src/humandesign/static/bodygraph_sample.png" alt="alt text" width="50%" />
 
 
 
@@ -376,4 +376,8 @@ The project is organized as follows:
 
 3.  **Generate Client Libraries**:
     *   Tools like `openapi-generator` can use this file to generate API client code for various programming languages (e.g., Python, JavaScript, Java).
+
+---
+*Documentation generated for Human Design API v1.5.0*
+
 

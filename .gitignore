@@ -24,6 +24,7 @@ docker-compose.override.yml
 
 # Test and build artifacts
 .pytest_cache/
+*.egg-info/
 .clinerules
 
 # Operating System files
