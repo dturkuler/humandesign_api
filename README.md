@@ -184,7 +184,7 @@ The project is organized as follows:
       -H "Authorization: Bearer your_secret_token_here" \
       -o bodygraph.png
  ```
- ![alt text](static/bodygraph_sample.png)
+ <img src="static/bodygraph_sample.png" alt="alt text" width="50%" />
 
 
 
