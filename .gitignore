@@ -39,4 +39,5 @@ Thumbs.db
 conductor/
 # tests
 tests/
+tests/*
 
