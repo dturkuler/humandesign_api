@@ -70,9 +70,9 @@ To get the Human Design API up and running, follow these steps:
     You should see a container named `humandesignapi` running.
 
 ## Folder Structure
-
+ 
 The project is organized as follows:
-
+ 
 ```
 .
 ├── .env_example
@@ -80,24 +80,23 @@ The project is organized as follows:
 ├── CHANGELOG.md
 ├── LICENSE
 ├── README.md
-├── api.py
-├── chart.py
-├── composite_handler.py
-├── convertJSON.py
 ├── docker-compose.yml
 ├── Dockerfile
-├── geocode.py
-├── hd_constants.py
-├── hd_features.py
-├── layout_data.json
 ├── openapi.yaml
 ├── requirements.txt
-├── static/
-│   └── favicon.ico
-└── pyproject.toml
+├── pyproject.toml
+└── src/
+    └── humandesign/
+        ├── api.py           # FastAPI Application Entry
+        ├── data/            # Static layout and hd data
+        ├── features/        # Core Rave Engine logic
+        ├── routers/         # API Route definitions
+        ├── schemas/         # Pydantic validation models
+        ├── services/        # Business logic services
+        └── utils/           # Utilities (Astrology, Versioning, etc.)
 ```
-
-*   **`api.py`**: The main FastAPI application. Defines endpoints, handles requests, and integrates calculation and visualization logic.
+ 
+*   **`src/humandesign/api.py`**: The main FastAPI application. Defines endpoints, handles requests, and integrates calculation and visualization logic.
 *   **`chart.py`**:  Generates high-fidelity BodyGraph images (PNG, SVG, JPG) using `matplotlib` and extracted vector geometry.
 *   **`composite_handler.py`**: Encapsulates logic for composite chart calculations, including input processing and feature enrichment.
 *   **`convertJSON.py`**: Utility functions for formatting calculation results into structured JSON.

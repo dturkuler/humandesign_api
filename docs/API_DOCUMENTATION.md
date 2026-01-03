@@ -1,6 +1,6 @@
 # Human Design API Documentation
 
-**Version:** 1.5.1  
+**Version:** 1.6.1  
 **Base URL:** `http://localhost:8000` (or your deployment URL)
 
 ## Overview
@@ -212,4 +212,4 @@ curl -X POST "http://localhost:8000/analyze/penta" \
 | `500` | Internal Server Error |
 
 ---
-*Documentation generated for Human Design API v1.5.1*
+*Documentation generated for Human Design API v1.6.1*

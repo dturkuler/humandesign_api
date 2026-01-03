@@ -46,21 +46,27 @@ The Human Design API is built as a **Modular Monolith** using the **FastAPI** fr
 ### 3.4 Utilities (`src/humandesign/utils/`)
 - **`astrology.py`**: Western zodiac calculations.
 - **`date_utils.py`**: ISO formatting and age calculation.
+- **`health_utils.py`**: Live dependency verification (Swiss Ephemeris).
+- **`version.py`**: Centralized version retrieval from `pyproject.toml`.
 - **`serialization.py`**: Custom JSON encoders for NumPy compatibility.
 
 ---
 
 ## 4. Cross-Cutting Concerns
 
-### 4.1 Authentication
+### 4.1 Monitoring & Health
+- **System Health**: A dedicated `/health` endpoint in `routers/general.py` provides real-time status of the API and its data dependencies (Swiss Ephemeris).
+- **Version Synchronization**: The system enforces a single-source-of-truth for versioning using `pyproject.toml`, retrieved via `utils/version.py`.
+
+### 4.2 Authentication
 - Implemented via `dependencies.py` using a Bearer token verification system.
 - Enforced at the router level using FastAPI's `Depends(verify_token)`.
 
-### 4.2 Error Handling
+### 4.3 Error Handling
 - Use of `fastapi.HTTPException` for consistent error responses (400 for bad input, 500 for calculation errors).
 - Geocoding and timezone resolution include fallback logic (e.g., defaulting to UTC).
 
-### 4.3 Validation
+### 4.4 Validation
 - Input validation is handled strictly by Pydantic models in `schemas/input_models.py`.
 - Includes custom validators for year ranges (1800-2100) and day-of-month logic (leap years).
 
@@ -70,7 +76,6 @@ The Human Design API is built as a **Modular Monolith** using the **FastAPI** fr
 
 - **Asynchronous Programming**: FastAPI routes are designed for high-concurrency request handling.
 - **Dependency Enrichment**: Routing logic leverages common dependencies for clean code and shared state.
-- **Package Metadata**: Versioning and dependencies are managed via `pyproject.toml`, with `importlib.metadata` used for runtime version retrieval.
 
 ---
 
