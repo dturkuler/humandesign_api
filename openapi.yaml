@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Human Design API
-  version: 1.6.1
+  version: 1.7.0
 paths:
   /calculate:
     get:
@@ -699,22 +699,43 @@ components:
       - definition
       - variables
       title: GeneralOutput
+    VariableDetail:
+      type: object
+      properties:
+        value:
+          type: string
+          title: Value
+        name:
+          type: string
+          title: Name
+        aspect:
+          type: string
+          title: Aspect
+        def_type:
+          type: string
+          title: Definition Type
+      required:
+      - value
+      - name
+      - aspect
+      - def_type
+      title: VariableDetail
     Variables:
       type: object
       properties:
-        right_up:
-          type: string
-        right_down:
-          type: string
-        left_up:
-          type: string
-        left_down:
-          type: string
+        top_right:
+          $ref: '#/components/schemas/VariableDetail'
+        bottom_right:
+          $ref: '#/components/schemas/VariableDetail'
+        top_left:
+          $ref: '#/components/schemas/VariableDetail'
+        bottom_left:
+          $ref: '#/components/schemas/VariableDetail'
       required:
-      - right_up
-      - right_down
-      - left_up
-      - left_down
+      - top_right
+      - bottom_right
+      - top_left
+      - bottom_left
       title: Variables
     GateInfo:
       type: object

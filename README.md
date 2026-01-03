@@ -350,6 +350,6 @@ The project is organized as follows:
     *   Tools like `openapi-generator` can use this file to generate API client code for various programming languages (e.g., Python, JavaScript, Java).
 
 ---
-*Documentation generated for Human Design API v1.5.1*
+*Documentation generated for Human Design API v1.7.0*
 
 
