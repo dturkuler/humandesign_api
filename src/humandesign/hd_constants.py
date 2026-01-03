@@ -428,4 +428,40 @@ TYPE_DETAILS_MAP = {
         "not_self": "Unknown",
         "aura": "Unknown"
     }
+
+}
+
+VARIABLES_METADATA = {
+    "top_left": {
+        "name": "Digestion",
+        "aspect": "Design (Brain)",
+        "definitions": {
+            "left": {"type": "Active"},
+            "right": {"type": "Passive"}
+        }
+    },
+    "bottom_left": {
+        "name": "Environment",
+        "aspect": "Design (Body)",
+        "definitions": {
+            "left": {"type": "Consistent"},
+            "right": {"type": "Variable"}
+        }
+    },
+    "bottom_right": {
+        "name": "Perspective",
+        "aspect": "Personality (View)",
+        "definitions": {
+            "left": {"type": "Focused"},
+            "right": {"type": "Peripheral"}
+        }
+    },
+    "top_right": {
+        "name": "Motivation",
+        "aspect": "Personality (Mind)",
+        "definitions": {
+            "left": {"type": "Strategic"},
+            "right": {"type": "Receptive"}
+        }
+    }
 }

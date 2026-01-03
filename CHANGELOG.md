@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
  
+## [1.7.0] - 2026-01-03
+
+### Refactored
+- **Variables Logic**: Migrated `variables.json` data into internal `hd_constants.py` to remove external file dependencies and improve performance.
+- **Project Structure**: Standardized variable keys across the codebase (e.g., `top_left` instead of `right_up`) for better readability and alignment with Human Design terminology. See [Track: Refactor Variables](conductor/tracks/refactor_variables_20260103/) for details.
+
 ## [1.6.1] - 2026-01-03
 
 ### Fixed
