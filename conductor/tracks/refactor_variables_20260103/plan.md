@@ -13,7 +13,7 @@
     - **Step 3:** Verify no file I/O errors occur.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
-## Phase 2: Project-Wide Key Refactoring
+## Phase 2: Project-Wide Key Refactoring [checkpoint: 6710ee2]
 - [x] Task: specific key replacement in `hd_constants.py` and core logic.
     - **Description:** Replace `right_up` -> `top_right`, `left_up` -> `top_left`, etc. in the core calculation logic.
     - **Step 1:** detailed `grep` to find all occurrences.
@@ -26,7 +26,7 @@
     - **Step 2:** Ensure any transformation logic in serialization.py or routers maps correctly.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
-## Phase 3: API Response Transformation
+## Phase 3: API Response Transformation [checkpoint: 6710ee2]
 - [x] Task: Update Router/Controller Logic.
     - **Description:** Ensure the API returns the new nested structure (value, name, aspect, def_type).
     - **Step 1:** Create test `test_variables_structure.py` to assert the nested structure.
