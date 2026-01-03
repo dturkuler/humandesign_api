@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
  
+## [1.7.1] - 2026-01-03
+
+### Fixed
+- **Timezone Resolution**: Pinned `timezonefinder>=8.2.0` to resolve a bug where older versions (8.1.0) incorrectly mapped certain Turkish coordinates to `Europe/Moscow`. This ensures consistent Tone/Color calculation across environments.
+
 ## [1.7.0] - 2026-01-03
 
 ### Refactored

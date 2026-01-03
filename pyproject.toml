@@ -1,6 +1,6 @@
 [project]
 name = "humandesign-api"
-version = "1.7.0"
+version = "1.7.1"
 description = "Human Design API"
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
@@ -19,7 +19,7 @@ dependencies = [
     "uvicorn==0.27.1",
     "pydantic>=2.7.0",
     "geopy==2.4.1",
-    "timezonefinder",
+    "timezonefinder>=8.2.0",
     "python-dotenv",
     "matplotlib",
     "svgpath2mpl",

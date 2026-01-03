@@ -9,7 +9,7 @@ fastapi>=0.115.0
 uvicorn==0.27.1
 pydantic>=2.7.0
 geopy==2.4.1
-timezonefinder
+timezonefinder>=8.2.0
 python-dotenv
 matplotlib
 svgpath2mpl
