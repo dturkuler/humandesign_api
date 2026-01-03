@@ -1,0 +1,5 @@
+Track: Fix Hardcoded Variables Output
+- Status: Completed
+- Bug: The 'variables' field in /calculate and /bodygraph was hardcoded.
+- Fix: Integrated get_variables() into calc_single_hd_features and updated routers.
+- Verification: Tests added for core logic and router. Manual curl verification successful.
