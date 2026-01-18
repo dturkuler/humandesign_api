@@ -134,6 +134,9 @@ CHANNEL_MEANING_DICT = {
                         (30,41):["Recognition","A d. of focused energy"],
                         }
 
+# Alias for spec compliance
+CHANNEL_NAMES_MAP = CHANNEL_MEANING_DICT
+
 IC_CROSS_TYP = { 
                 (1,3):"RAC",
                 (1,4):"RAC",
