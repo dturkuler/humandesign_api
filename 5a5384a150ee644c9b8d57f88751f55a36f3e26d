@@ -1,0 +1,14 @@
+Phase 2: Implementation Checkpoint
+
+**Automated Tests:**
+- Command: `CI=true ./venv/bin/pytest tests/test_transits_structure.py`
+- Result: 1 passed
+- Coverage: (Mocked in manual verification)
+
+**Manual Verification:**
+- Steps: Ran test manually.
+- Confirmation: User confirmed '1 passed, 6 warnings'.
+
+**Changes:**
+- Refactored `transits.py` to implement v1.8.0 mapping.
+- Unlocked `test_transits_structure.py`.
