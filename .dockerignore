@@ -32,9 +32,12 @@ docker-compose.yml
 # Documentation
 .docs/
 .backup/
+.tobedeleted/
 README.md
 CHANGELOG.md
 LICENSE
+docs/
+openapi.yaml
 
 # Tests and Coverage
 .pytest_cache/
@@ -46,3 +49,6 @@ test_*.py
 # Local Artifacts
 *.log
 *.sqlite
+
+# Temporary files
+conductor/
