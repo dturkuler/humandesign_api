@@ -36,7 +36,7 @@ The **Human Design API** is designed as a stateless, high-performance calculatio
 -   **Components:**
     -   `general.py`: Core endpoints (`/calculate`, `/bodygraph`, `/health`).
     -   `transits.py`: Temporal analysis (`/transits/daily`, `/transits/solar_return`).
-    -   `composite.py`: Multi-person analysis (`/analyze/composite`, `/analyze/penta`, `/analyze/penta/v2`).
+    -   `composite.py`: Multi-person analysis (`/analyze/composite`, `/analyze/penta`).
 -   **Pattern:** FastAPI Routers using Pydantic schemas for validation.
 
 ### B. Feature Engine (`src/humandesign/features/`)
@@ -103,7 +103,7 @@ The **Human Design API** is designed as a stateless, high-performance calculatio
 
 **Modifying Penta Logic:**
 -   Edit `src/humandesign/features/core.py`.
--   Ensure backward compatibility for V1 endpoint (`/analyze/penta`).
+-   Maintain Sovereign Standard (V2) semantic mapping structure.
 
 ## 9. Governance
 
