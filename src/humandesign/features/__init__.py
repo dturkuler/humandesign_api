@@ -10,7 +10,7 @@ from .core import (
     composite_chakras_channels,
     get_composite_combinations,
     get_penta,
-    get_penta_v2,
+
     hd_composite
 )
 from .attributes import (

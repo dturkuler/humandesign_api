@@ -294,7 +294,7 @@ def analyze_penta_v2(
 
     # Call v2 Logic with Group Type
     try:
-        result = hd.get_penta_v2(participants_gates, group_type=request.group_type)
+        result = hd.get_penta(participants_gates, group_type=request.group_type)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error in Penta v2 calculation: {str(e)}")
 

@@ -594,30 +594,7 @@ def get_composite_combinations(persons_dict):
     
     return result_df
 
-def get_penta(persons_dict,report=False):
-    """
-    take gates of given identity combination (concat) and look if it matches to "penta" gates
-    Args:
-         person dict(dict): eg {"person1":(2022,2,2,2,22,0,2),"person2":(1922,2,2,2,22,0,2)}
-         report(bool): print full report (dataframe, with every gate matched)
-    Return:
-        df(pd.Dataframe): penta gates as cols
-                          if identity combination has penta gate:x, else:0 
-        persentage(float): how much percent of penta is matched
-    """
-    penta_dict = {k: [] for k in hd_constants.penta_dict.keys()}
-    
-    for person in persons_dict.keys():
-        identity_dict = get_single_hd_features(persons_dict,person,'date_to_gate_dict')
-        person_gate_list=np.array(identity_dict["gate"])
-        person_penta_gates = np.intersect1d(person_gate_list,np.array(list(penta_dict.keys())))
-    result_dict = {elem:pd.Series(persons_dict.keys()).isin(penta_dict[elem]) 
-                   for elem in penta_dict.keys()}
-    penta_gates_bool = [(any(result_dict[key])) for key in result_dict.keys()]
-    sum_penta_gates = sum(penta_gates_bool)
-    
-    percentage = round(sum_penta_gates/12*100,2)
-    return percentage, penta_dict
+
 
 def analyze_dynamics_gold(owners_g1, owners_g2):
     """
@@ -647,9 +624,9 @@ def analyze_dynamics_gold(owners_g1, owners_g2):
 
     return "EM", "Electromagnetic", list(all_participants)
 
-def get_penta_v2(participants_data, group_type="family"):
+def get_penta(participants_data, group_type="family"):
     """
-    Gold Standard Penta Analysis (v2)
+    Gold Standard Penta Analysis (Sovereign Standard)
     Args:
         participants_data: Dict[str, Dict] containing 'gate', 'line', 'label' lists.
         group_type: 'family' or 'business'
