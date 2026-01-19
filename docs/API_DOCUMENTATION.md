@@ -1,6 +1,6 @@
 # Human Design API Documentation
 
-**Version:** 1.7.4  
+**Version:** 2.0.0
 **Base URL:** `http://localhost:8000` (or your deployment URL)
 
 ## Overview
@@ -182,35 +182,25 @@ curl -X POST "http://localhost:8000/analyze/composite" \
 }
 ```
 
-### Group Penta Analysis
-Calculate group dynamics for 3-5 people.
+
+
+### Group Penta Analysis (Sovereign Standard)
+Enhanced Penta Analysis returning a hierarchical, semantic JSON structure with Channels, Gaps, and Functional Zones. Optimized for LLM interpretation.
 
 **Endpoint:** `POST /analyze/penta`
 
 #### Request Body
-Accepts dictionary of 3 to 5 people (similar structure to Composite).
-
-#### Example Request
-```bash
-curl -X POST "http://localhost:8000/analyze/penta" \
-  -H "Authorization: Bearer <your_token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "person1": { "place": "London, UK", "year": 1990, "month": 1, "day": 1, "hour": 12, "minute": 0 },
-    "person2": { "place": "New York, USA", "year": 1992, "month": 5, "day": 20, "hour": 18, "minute": 30 },
-    "person3": { "place": "Berlin, DE", "year": 1985, "month": 3, "day": 15, "hour": 9, "minute": 15 }
-  }'
-    "person3": { "place": "Berlin, DE", "year": 1985, "month": 3, "day": 15, "hour": 9, "minute": 15 }
-  }'
+Dictionary of 3-5 people (similar structure to Composite) plus optional `group_type` ("family" or "business").
+```json
+{
+  "participants": {
+    "person1": { ... },
+    "person2": { ... },
+    "person3": { ... }
+  },
+  "group_type": "family"
+}
 ```
-
-### Group Penta Analysis (v2) - AI-Native
-Enhanced Penta Analysis returning a hierarchical, semantic JSON structure with Channels, Gaps, and Functional Zones. Optimized for LLM interpretation.
-
-**Endpoint:** `POST /analyze/penta/v2`
-
-#### Request Body
-Same as `/analyze/penta` (Dictionary of 3-5 person objects).
 
 #### Example Response
 ```json
@@ -306,4 +296,4 @@ Same as `/analyze/penta` (Dictionary of 3-5 person objects).
 | `500` | Internal Server Error |
 
 ---
-*Documentation generated for Human Design API v1.9.0*
+*Documentation generated for Human Design API v2.0.0*

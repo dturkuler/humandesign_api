@@ -615,62 +615,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
+
   /analyze/penta:
     post:
-      summary: Analyze Penta
-      description: "Calculate Penta (Group Analysis) for a group of people. Returns the match percentage and details of active Penta gates.\n\nInput:\n{\n    \"person1\": { \"place\": \"Berlin, Germany\", \"year\": 1985, \"month\": 6, \"day\": 15, \"hour\": 14, \"minute\": 30 },\n    \"person2\": { ... },\n    \"person3\": { ... }\n}"
+      summary: Analyze Penta (Sovereign Standard)
+      description: "Enhanced Penta Analysis returning a hierarchical, semantic JSON structure with Channels, Gaps, and Functional Zones (Upper/Lower).\n\nInput:\n{\n    \"person1\": { ... },\n    \"person2\": { ... },\n    \"person3\": { ... }\n}"
       operationId: analyze_penta_analyze_penta_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              additionalProperties:
-                $ref: '#/components/schemas/PersonInput'
-              type: object
-              title: Inputs
-              description: Dictionary of 3-5 people for Penta analysis.
-            example:
-              person1:
-                place: Berlin, Germany
-                year: 1985
-                month: 6
-                day: 15
-                hour: 14
-                minute: 30
-              person2:
-                place: New York, USA
-                year: 1980
-                month: 2
-                day: 10
-                hour: 9
-                minute: 15
-              person3:
-                place: London, UK
-                year: 1990
-                month: 12
-                day: 5
-                hour: 18
-                minute: 45
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-      security:
-      - HTTPBearer: []
-  /analyze/penta/v2:
-    post:
-      summary: Analyze Penta (v2)
-      description: "Enhanced Penta Analysis (v2) returning a hierarchical, semantic JSON structure with Channels, Gaps, and Functional Zones (Upper/Lower).\n\nInput:\n{\n    \"person1\": { ... },\n    \"person2\": { ... },\n    \"person3\": { ... }\n}"
-      operationId: analyze_penta_v2_analyze_penta_v2_post
       requestBody:
         content:
           application/json:

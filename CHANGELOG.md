@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2026-01-19
 ### Added
-- **Penta Analysis V2**: New endpoint `POST /analyze/penta/v2`.
+- **Penta Analysis 2.0**: Upgraded `POST /analyze/penta` to use the new Sovereign Standard engine.
+    - **Breaking Change**: Legacy 1.x Penta endpoint logic has been removed. The endpoint now returns the V2 hierarchical structure.
+    - **Removed**: `POST /analyze/penta/v2` (features merged into main endpoint).
     - **Sovereign Standard**: Consultant-grade interpretation with zero hallucinations.
     - **Contextual Semantics**: API dynamically adjusts output language for "Business" vs "Family" group types (e.g., "Toxic Environment" vs "Chaotic Home").
     - **Functional Role Assignment**: Explicitly maps contributors to functional roles (e.g., `"Planning": ["User A"]`).

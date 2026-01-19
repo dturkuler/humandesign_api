@@ -20,7 +20,7 @@ Whether you are building a mobile app, a professional dashboard, or a personal r
 *   **Composite Analysis**: Calculates relationship mechanics (connection channels, centers) between multiple people via the `/compmatrix` endpoint.
 *   **Detailed Pairwise Analysis**: Calculates granular relationship details (new/duplicated channels) for exactly two people via the `/analyze/composite` endpoint.
 *   **Transit Analysis**: Provides Daily Weather and Solar Return (Yearly Theme) calculations for advanced forecasting.
-*   **Penta Analysis**: Calculates Group Dynamics (3-5 people) via the `/analyze/penta` endpoint, revealing active group energy fields.
+*   **Penta Analysis**: Calculates Group Dynamics (3-5 people) via the `/analyze/penta` endpoint, providing high-level semantic analysis (Sovereign Standard).
 *   **Comprehensive Chart Data**: Returns Energy Type, Strategy, Authority, Profile, Incarnation Cross, Variables, Age, Western Zodiac Sign, and full Planetary/Gate positions.
 *   **Robust Validation**: Strict input validation using Pydantic, supporting flexible data types (integers or strings) for ease of integration.
 *   **Docker Ready**: Simple deployment with Docker and Docker Compose.
@@ -290,47 +290,10 @@ The project is organized as follows:
  
  ---
  
- ### 6. `POST /analyze/penta`
+ ### 7. `POST /analyze/penta`
  
- Calculates the **Penta** (Group Dynamics) for a group of 3-5 people.
- 
- #### Request Body
- Uses the same structure as `/compmatrix` but requires 3 to 5 people.
- 
- ```json
- {
-   "person1": { "place": "Berlin, Germany", "year": 1985, "month": 6, "day": 15, "hour": 14, "minute": 30 },
-   "person2": { "place": "Rome, Italy", "year": 1990, "month": 2, "day": 10, "hour": 10, "minute": 0 },
-   "person3": { "place": "London, UK", "year": 1992, "month": 12, "day": 5, "hour": 18, "minute": 30 }
- }
- ```
- 
- #### Example Request
- ```bash
- curl -X POST "http://localhost:9021/analyze/penta" \
-      -H "Authorization: Bearer your_secret_token_here" \
-      -H "Content-Type: application/json" \
-      -d @penta_payload.json
- ```
- 
- #### Response
- ```json
- {
-   "penta_match_percentage": 58.33,
-   "active_penta_gates": {
-     "1": ["person3", "person1"],
-     "8": [],
-     "31": ["person3"],
-     ...
-   }
- }
- ```
- 
-
- ### 7. `POST /analyze/penta/v2`
-
  Calculates the **Group Dynamics (Penta)** using the Sovereign Standard (Consultant-Level Interpretation).
-
+ 
  #### Request Body
  ```json
  {
@@ -341,15 +304,15 @@ The project is organized as follows:
    }
  }
  ```
-
+ 
  #### Example Request
  ```bash
- curl -X POST "http://localhost:9021/analyze/penta/v2" \
+ curl -X POST "http://localhost:9021/analyze/penta" \
       -H "Authorization: Bearer your_secret_token_here" \
       -H "Content-Type: application/json" \
       -d @penta_v2_payload.json
  ```
-
+ 
  #### Response
  ```json
  {
@@ -397,6 +360,6 @@ The project is organized as follows:
     *   Tools like `openapi-generator` can use this file to generate API client code for various programming languages (e.g., Python, JavaScript, Java).
 
 ---
-*Documentation generated for Human Design API v1.9.0*
+*Documentation generated for Human Design API v2.0.0*
 
 
