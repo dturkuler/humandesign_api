@@ -1,7 +1,7 @@
 # Project Architecture Blueprint
 
 **Generated:** 2026-01-20
-**Version:** 2.2.0
+**Version:** 3.0.0
 **Project:** Human Design API
 
 ## 1. Architecture Detection and Analysis
@@ -21,97 +21,73 @@ The application is structured into distinct layers with clear separation of conc
 
 ## 2. Architectural Overview
 
-The **Human Design API** is designed as a stateless, high-performance calculation engine. It adheres to the **Sovereign Standard**, ensuring zero-hallucination, deterministic outputs for complex astrological and Human Design metrics.
+The **Human Design API** is a stateless, high-performance calculation engine. Reaching **v3.0.0**, it has completed a significant architectural consolidation, retiring legacy endpoints to focus on the **Maia-Penta Hybrid Analysis**—a professional-grade engine for complex relational and group dynamics.
 
 **Guiding Principles:**
-1.  **Statelessness:** No database persistence for calculations; strict Input-Process-Output.
-2.  **Modularity:** Core logic (`features`) is decoupled from the HTTP layer (`routers`).
-3.  **Precision:** Uses industry-standard Swiss Ephemeris for astronomical accuracy.
-4.  **Semantic Richness:** Output is strictly typed and semantically mapped (Diamond/Sovereign standards) for ease of AI/Human interpretation.
+1.  **Statelessness:** Strict Input-Process-Output workflow.
+2.  **Modularity:** Decoupled calculation core (`features`) from transport layer (`routers`).
+3.  **Precision:** Industry-standard accuracy via Swiss Ephemeris.
+4.  **Consolidation:** Unified analysis flagship to prevent model-drift and redundant logic.
 
 ## 3. Core Architectural Component Implementation
 
 ### A. API Layer (`src/humandesign/routers/`)
--   **Purpose:** Handles HTTP requests, input validation, and response formatting.
--   **Components:**
-    -   `general.py`: Core endpoints (`/calculate`, `/bodygraph`, `/health`). Supports optional `latitude`/`longitude` for bypass.
-    -   `transits.py`: Temporal analysis (`/transits/daily`, `/transits/solar_return`). Supports optional coordinates.
-    -   `composite.py`: Multi-person analysis (`/analyze/composite`, `/analyze/penta`, `/analyze/maia-penta`).
--   **Pattern:** FastAPI Routers using Pydantic schemas for validation.
+-   **Purpose:** HTTP Interface, validation, and orchestration.
+-   **Key Components:**
+    -   `general.py`: Root endpoints (`/calculate`, `/bodygraph`, `/health`).
+    -   `transits.py`: Temporal logic (`/daily`, `/solar_return`).
+    -   `composite.py`: Multi-person track. **V3 Update:** Retired `/compmatrix` and `/maiamatrix`. Features the `/analyze/maia-penta` flagship.
 
 ### B. Feature Engine (`src/humandesign/features/`)
--   **Purpose:** The "Brain" of the application. Contains pure functions for Human Design logic.
--   **Components:**
-    -   `core.py`: Implementation of high-level algorithms (Penta, Composite).
-    -   `mechanics.py`: Rules for Authority, Centers, and Definition.
-    -   `attributes.py`: Static attributes (Gates, Lines, Channels).
--   **Pattern:** Functional programming; stateless functions receiving definitions and astronomical data.
+-   **Purpose:** Domain logic implementation.
+-   **Key Components:**
+    -   `core.py`: Complex algorithms (Hybrid, Penta, Relational).
+    -   `mechanics.py`: System rules (Authority, Centers).
+    -   `attributes.py`: Static data (Gates, Channels).
 
-### C. Data & Constants (`src/humandesign/hd_constants.py`)
--   **Purpose:** Single Source of Truth for Human Design knowledge.
--   **Content:**
-    -   `PENTA_DEFINITIONS`: Channel maps for group dynamics.
-    -   `FAMILY/BUSINESS_SKILLS_MAP`: Semantic context dictionaries.
-    -   `PENTA_LINE_KEYWORD_MAP`: Operational style definitions.
--   **Pattern:** Constant lookup tables (dictionaries) for O(1) access.
+### C. Service Layer (`src/humandesign/services/`)
+-   **Purpose:** Cross-cutting technical utilities.
+-   **Key Components:**
+    -   `chart_renderer.py`: Visual generation.
+    -   `composite.py`: Orchestration for multi-participant jobs. **V3 Update:** Pruned redundant legacy matrix logic.
 
-### D. Service Layer (`src/humandesign/services/`)
--   **Purpose:** Utilities that orchestrate complex, non-domain specific tasks.
--   **Components:**
-    -   `chart_renderer.py`: BodyGraph image generation logic.
-    -   `geolocation.py`: Lat/Lon resolution.
+## 4. Data Flow (v3.0.0 optimized)
 
-## 4. Data Flow
-
-1.  **Input:** User sends Birth Data (Date, Time, Location).
-2.  **Validation:** Pydantic schemas enforce type and range correctness.
-3.  **Geocoding:** `geolocation.py` converts "City, Country" -> (Lat, Lon) -> Timezone.
-4.  **Ephemeris:** `pyswisseph` calculates planetary positions (Julian Day).
-5.  **Feature Logic:** `features/core.py` transforms positions into Gate/Line/Tone activations.
-6.  **Mechanics:** `mechanics.py` determines Centers, Channels, and Authority.
-7.  **Semantic Mapping:** V2 logic applies `hd_constants` maps (Family vs Business) to enrich output.
-8.  **Hybrid Orchestration:** `maia-penta` track combines relativistic triggers with group dynamic gaps.
-9.  **Output:** Structured JSON is returned to the client.
+1.  **Ingress:** Pydantic validation of birth/transit parameters.
+2.  **Bio-Resolution:** Conversion of city names to (Lat/Lon) with optional bypass support.
+3.  **Astro-Calculation:** Swiss Ephemeris calculates planetary longitudes (base data).
+4.  **Rave Transformation:** Base data mapped to Gates/Lines/Tones.
+5.  **Relational Synthesis:** Hybrid engine correlates participants' planetary triggers and nodal environmental resonance.
+6.  **Penta Projection:** Functional group gaps calculated based on unified group mechanics.
+7.  **Egress:** High-fidelity JSON response returned.
 
 ## 5. Cross-Cutting Concerns
 
--   **Authentication:** Bearer Token middleware (`verify_token` dependency).
--   **Error Handling:** Global exception handlers return standardized HTTP 4xx/5xx responses.
--   **Health Checks:** `/health` endpoint monitors system and dependency status (e.g., SwissEph availability).
--   **Versioning:** Single source of truth in `pyproject.toml`, exposed via API metadata.
+-   **Security:** Bearer Token middleware.
+-   **Performance:** Singleton `TimezoneFinder` and geocoding bypass.
+-   **Observability:** `/health` monitoring.
+-   **Versioning:** PEP 621 compliant metadata managed via `pyproject.toml`.
 
-## 6. Implementation Patterns (Penta V2)
+## 6. Implementation Patterns (v3 Flagship)
 
-**Diamond/Sovereign Standard Implementation:**
--   **Context Switching:** Logic in `get_penta_v2` dynamically swaps lookup tables (`FAMILY_Skills` vs `BUSINESS_Skills`) based on `group_type`.
--   **Functional Roles:** Iterates active channels to map participants to functional outputs (`Implementation`, `Planning`).
--   **Line Semantics:** Applies specialized `PENTA_LINE_KEYWORD_MAP` to translate raw line numbers (1-6) into operational styles (e.g., "Authoritarian").
-
-**Tier 3 Performance Scaling:**
--   **Singleton Patterns:** `TimezoneFinder` is instantiated once globally to prevent high-latency re-load cycles.
--   **Geocoding Bypass:** Strategic injection of (Lat, Lon) parameters to circumvent external service dependencies and Nominatim rate-limits.
+**Maia-Penta Hybrid Orchestration:**
+-   **Relational Precision:** Uses `date_to_gate_dict` to find planetary weights behind relational connections.
+-   **Group Vitality:** Deduce functional roles and "Vital Sign" gaps in group structures.
+-   **Semantic Cleanse:** Dynamically maps esoteric terminology to professional psychological language in output.
 
 ## 7. Deployment Architecture
 
--   **Docker:** Multi-stage build (Builder -> Runtime) to minimize image size (~450MB).
--   **Environment:** Configuration via `.env` file (API Token).
--   **Orchestration:** Docker Compose maps port 8000 and manages volume/network links.
+-   **Docker:** Optimized multi-stage build (~520MB).
+-   **Registry:** Publicly available at `dturkuler/humandesign_api:3.0.0`.
+-   **Configuration:** 12-Factor app principles via environment variables.
 
-## 8. Extension Guide
+## 8. Development Blueprint
 
-**Adding a New Analysis Type:**
-1.  **Define Schema:** Add input/output models in `schemas/`.
-2.  **Implement Logic:** Add calculation function in `features/` or `services/`.
-3.  **Register Route:** Add endpoint in appropriate `routers/` file.
-4.  **Map Constants:** If semantic mapping is needed, update `hd_constants.py`.
-5.  **Test:** Add unit test in `tests/`.
+**Implementing New Features:**
+1.  **Define Schema:** `schemas/input_models.py` or `response_models.py`.
+2.  **Core Logic:** Add pure functions to `features/core.py`.
+3.  **Router Registration:** Extend existing modules in `routers/`.
+4.  **Verification:** Assert parity with snapshots and new TDD requirements.
 
-**Modifying Penta Logic:**
--   Edit `src/humandesign/features/core.py`.
--   Maintain Sovereign Standard (V2) semantic mapping structure.
-
-## 9. Governance
-
--   **Testing:** `pytest` suite ensuring parity across individual, composite, and group calculations.
--   **Linting:** `ruff` used for code quality enforcement.
--   **Documentation:** `API_DOCUMENTATION.md` and `OPENAPI.yaml` must be kept in sync with code changes.
+---
+*Blueprint automatically updated for Version 3.0.0 Release Cycle.*
