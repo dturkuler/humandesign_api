@@ -7,7 +7,8 @@ from .. import hd_constants
 from ..services.geolocation import get_latitude_longitude
 from ..dependencies import verify_token
 from ..schemas.input_models import PersonInput, PentaRequest
-from ..services.composite import process_composite_matrix
+from ..schemas.response_models import CompMatrixResponse
+from ..services.composite import process_composite_matrix, process_maia_matrix
 
 router = APIRouter()
 
@@ -49,6 +50,46 @@ def get_composite_matrix(
         result = process_composite_matrix(inputs)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing composite matrix: {str(e)}")
+
+    return JSONResponse(content=result)
+
+@router.post("/analyze/maiamatrix", response_model=CompMatrixResponse)
+def get_maia_matrix(
+    inputs: Dict[str, PersonInput] = Body(
+        ...,
+        examples=[{
+            "person1": {
+                "place": "Berlin, Germany",
+                "year": 1985,
+                "month": 6,
+                "day": 15,
+                "hour": 14,
+                "minute": 30
+            },
+            "person2": {
+                "place": "Munich, Germany",
+                "year": 1988,
+                "month": 11,
+                "day": 22,
+                "hour": 9,
+                "minute": 15
+            }
+        }],
+        description="Dictionary of people for Professional Maia Relational Matrix analysis."
+    ),
+    authorized: bool = Depends(verify_token)
+):
+    """
+    Calculate Professional Maia Relational Matrix (deep pairwise analysis).
+    Includes connection types (Electromagnetic, etc.) and 9-0 classification codes.
+    """
+    if not inputs:
+        raise HTTPException(status_code=400, detail="Input dictionary cannot be empty.")
+
+    try:
+        result = process_maia_matrix(inputs)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing maia matrix: {str(e)}")
 
     return JSONResponse(content=result)
 
@@ -96,8 +137,11 @@ def analyze_composite(
             if latitude is None or longitude is None:
                  raise HTTPException(status_code=400, detail=f"Geocoding failed for {name} place: '{p_input.place}'")
             
-            tf = TimezoneFinder()
-            zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
+            if "/" in p_input.place:
+                zone = p_input.place
+            else:
+                tf = TimezoneFinder()
+                zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
             
             birth_time = (p_input.year, p_input.month, p_input.day, p_input.hour, p_input.minute, 0)
             hours = hd.get_utc_offset_from_tz(birth_time, zone)
@@ -204,8 +248,11 @@ def analyze_penta(
             if latitude is None or longitude is None:
                  raise HTTPException(status_code=400, detail=f"Geocoding failed for {name} place: '{p_input.place}'")
             
-            tf = TimezoneFinder()
-            zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
+            if "/" in p_input.place:
+                zone = p_input.place
+            else:
+                tf = TimezoneFinder()
+                zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
             
             birth_time = (p_input.year, p_input.month, p_input.day, p_input.hour, p_input.minute, 0)
             hours = hd.get_utc_offset_from_tz(birth_time, zone)

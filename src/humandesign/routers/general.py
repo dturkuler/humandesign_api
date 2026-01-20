@@ -49,10 +49,11 @@ def calculate_hd(
     try:
         latitude, longitude = get_latitude_longitude(place)
         if latitude is not None and longitude is not None:
-            tf = TimezoneFinder()
-            zone = tf.timezone_at(lat=latitude, lng=longitude)
-            if not zone:
-                zone = 'Etc/UTC'
+            if "/" in place:
+                zone = place
+            else:
+                tf = TimezoneFinder()
+                zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
         else:
             raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'. Please check the place name or try a different format.")
         hours = hd.get_utc_offset_from_tz(birth_time, zone)

@@ -24,8 +24,12 @@ def get_solar_return(
     latitude, longitude = get_latitude_longitude(place)
     if latitude is None or longitude is None:
         raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'")
-    tf = TimezoneFinder()
-    zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
+    
+    if "/" in place:
+        zone = place
+    else:
+        tf = TimezoneFinder()
+        zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
     birth_time = (year, month, day, hour, minute, second)
     hours = hd.get_utc_offset_from_tz(birth_time, zone)
     birth_timestamp = tuple(list(birth_time) + [int(hours)])
@@ -82,7 +86,10 @@ def get_daily_transit(
         raise HTTPException(status_code=400, detail=f"Geocoding failed for birth place: '{place}'")
     
     tf = TimezoneFinder()
-    b_zone = tf.timezone_at(lat=b_lat, lng=b_lon) or 'Etc/UTC'
+    if "/" in place:
+        b_zone = place
+    else:
+        b_zone = tf.timezone_at(lat=b_lat, lng=b_lon) or 'Etc/UTC'
     
     birth_time = (year, month, day, hour, minute, second)
     b_offset_hours = hd.get_utc_offset_from_tz(birth_time, b_zone)
@@ -96,7 +103,11 @@ def get_daily_transit(
         c_lat, c_lon = get_latitude_longitude(calculation_place)
         if c_lat is None or c_lon is None:
              raise HTTPException(status_code=400, detail=f"Geocoding failed for current place: '{calculation_place}'")
-        c_zone = tf.timezone_at(lat=c_lat, lng=c_lon) or 'Etc/UTC'
+        
+        if "/" in calculation_place:
+            c_zone = calculation_place
+        else:
+            c_zone = tf.timezone_at(lat=c_lat, lng=c_lon) or 'Etc/UTC'
     else:
         # Re-use birth place info
         c_lat, c_lon = b_lat, b_lon
