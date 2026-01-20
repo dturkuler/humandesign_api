@@ -48,3 +48,4 @@ tests/*
 htmlcov/
 
 .tobedeleted/
+.ruff_cache/
