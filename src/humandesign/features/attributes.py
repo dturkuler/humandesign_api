@@ -1,17 +1,4 @@
 from .. import hd_constants
-import swisseph  as swe  
-from IPython.display import display
-import pandas as pd
-import numpy as np
-import itertools
-from datetime import timedelta
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
-from pytz import timezone
-from multiprocessing import Pool
-from tqdm.contrib.concurrent import process_map
-from tqdm import tqdm
-import sys
 
 def get_inc_cross(date_to_gate_dict):
     ''' 
@@ -99,4 +86,44 @@ def get_variables(date_to_gate_dict):
     variables["short_code"] = f"P{p_top}{p_bot} D{d_top}{d_bot}"
 
     return variables 
+
+def get_lunar_phase(date_to_gate_dict):
+    """
+    Calculate Lunar Phase from Sun/Moon longitude.
+    Phase = (Moon - Sun) % 360
+    """
+    try:
+        planets = date_to_gate_dict.get("planets", [])
+        lons = date_to_gate_dict.get("lon", [])
+        
+        if "Sun" not in planets or "Moon" not in planets:
+             return "Unknown"
+             
+        sun_idx = planets.index("Sun")
+        moon_idx = planets.index("Moon")
+        
+        sun = lons[sun_idx]
+        moon = lons[moon_idx]
+        
+        diff = (moon - sun) % 360
+        
+        # 8 Phases (approx 45 deg each)
+        if diff < 45:
+            return "New Moon"
+        if diff < 90:
+            return "Waxing Crescent"
+        if diff < 135:
+            return "First Quarter"
+        if diff < 180:
+            return "Waxing Gibbous"
+        if diff < 225:
+            return "Full Moon"
+        if diff < 270:
+            return "Waning Gibbous"
+        if diff < 315:
+            return "Last Quarter"
+        return "Waning Crescent"
+        
+    except Exception:
+        return "Unknown"
 

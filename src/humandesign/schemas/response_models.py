@@ -61,6 +61,12 @@ class SubLineDetail(BaseModel):
     tone: int
     base: int
     planet: str
+    position: str = Field(..., description="High-precision planetary position (e.g., '12.450')")
+
+class MetaDetail(BaseModel):
+    engine: str
+    ephemeris: str
+    timestamp: str
 
 class MaiaDetail(BaseModel):
     channel: List[int] = Field(..., description="The two gates forming the channel")
@@ -121,3 +127,9 @@ class CompositePersonDetail(BaseModel):
 class CompMatrixResponse(BaseModel):
     persons: Dict[str, CompositePersonDetail]
     combinations: List[CombinationItem]
+
+class HybridAnalysisResponse(BaseModel):
+    meta: Optional[MetaDetail] = Field(None, description="Engine provenance and calculation metadata")
+    participants: Optional[Dict[str, CompositePersonDetail]] = Field(None, description="Full details of all participants")
+    penta_dynamics: Optional[PentaDetail] = Field(None, description="Technical summary of the group Entity")
+    dyad_matrix: List[CombinationItem] = Field(..., description="List of pairwise relationship analyses")

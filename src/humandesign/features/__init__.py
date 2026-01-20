@@ -10,13 +10,13 @@ from .core import (
     composite_chakras_channels,
     get_composite_combinations,
     get_penta,
-
     hd_composite
 )
 from .attributes import (
     get_inc_cross,
     get_profile,
-    get_variables
+    get_variables,
+    get_lunar_phase
 )
 from .mechanics import (
     is_connected,
@@ -30,3 +30,32 @@ from .mechanics import (
     chakra_connection_list,
     get_full_chakra_connect_dict
 )
+
+__all__ = [
+    "hd_features",
+    "get_utc_offset_from_tz",
+    "calc_single_hd_features",
+    "unpack_single_features",
+    "get_timestamp_list",
+    "calc_mult_hd_features",
+    "unpack_mult_features",
+    "get_single_hd_features",
+    "composite_chakras_channels",
+    "get_composite_combinations",
+    "get_penta",
+    "hd_composite",
+    "get_inc_cross",
+    "get_profile",
+    "get_variables",
+    "get_lunar_phase",
+    "is_connected",
+    "get_auth",
+    "get_typ",
+    "get_component",
+    "get_channels_and_active_chakras",
+    "get_definition",
+    "calc_full_gates_chakra_dict",
+    "calc_full_channel_meaning_dict",
+    "chakra_connection_list",
+    "get_full_chakra_connect_dict"
+]

@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, validator
-from typing import Union, Dict
+from pydantic import BaseModel, Field, validator, field_validator
+from typing import Union, Dict, Optional
 
 # Input Model
 class PersonInput(BaseModel):
@@ -13,6 +13,20 @@ class PersonInput(BaseModel):
     islive: bool = Field(True, description="Whether the person is still alive (True) or deceased (False)")
     latitude: Union[float, None] = Field(None, description="Optional: Latitude for direct input (bypassing geocoding)")
     longitude: Union[float, None] = Field(None, description="Optional: Longitude for direct input (bypassing geocoding)")
+
+    @field_validator('latitude')
+    @classmethod
+    def validate_latitude(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and (v < -90 or v > 90):
+            raise ValueError('Latitude must be between -90 and 90')
+        return v
+
+    @field_validator('longitude')
+    @classmethod
+    def validate_longitude(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and (v < -180 or v > 180):
+            raise ValueError('Longitude must be between -180 and 180')
+        return v
 
 
     @validator('year', 'month', 'day', 'hour', 'minute', pre=True)
@@ -82,4 +96,23 @@ class PentaRequest(BaseModel):
         allowed = ['family', 'business']
         if v.lower() not in allowed:
             raise ValueError(f"group_type must be one of {allowed}")
+        return v.lower()
+
+class HybridAnalysisRequest(BaseModel):
+    participants: Dict[str, PersonInput] = Field(..., description="Dictionary of participants (2+ people)")
+    group_type: str = Field("family", description="Type of group analysis: 'family' (default) or 'business'")
+    verbosity: str = Field("all", description="Detail level: 'all' (default) or 'partial'")
+
+    @validator('group_type')
+    def validate_group_type(cls, v):
+        allowed = ['family', 'business']
+        if v.lower() not in allowed:
+            raise ValueError(f"group_type must be one of {allowed}")
+        return v.lower()
+
+    @validator('verbosity')
+    def validate_verbosity(cls, v):
+        allowed = ['all', 'partial']
+        if v.lower() not in allowed:
+            raise ValueError(f"verbosity must be one of {allowed}")
         return v.lower()

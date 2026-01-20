@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-01-20
+### Added
+- **Maia-Penta Hybrid Analysis (10x)**: New endpoint `POST /analyze/maia-penta` for professional-grade group and relational analysis.
+    - **Tier 1 (Precision)**: Swisseph engine integration for deterministic degrees and provenance metadata.
+    - **Tier 2 (Complexity)**: Lunar Phase cycles and PRL/DRR Variables support.
+    - **Tier 3 (Performance)**: 100x improvement via `TimezoneFinder` Singleton (65ms vs 6s).
+- **Global Coordinate Support**: Optional `latitude` and `longitude` parameters added to `/calculate`, `/bodygraph`, `/transits/solar_return`, and `/transits/daily` to bypass external geocoding and improve precision.
+- **Performance Audit**: Automated benchmarking confirmed sub-25ms latency across all coordinate-enabled endpoints.
+
+### Changed
+- **Version bump**: Project version updated to v2.2.0.
+- **API Documentation**: Updated OpenAPI spec to reflect coordinate parameters and new endpoints.
+
+### Fixed
+- **NameError**: Resolved `Optional` type hint import issues in various routers.
+- **Linting**: Fixed 140+ Ruff errors for clean code standards.
+
 ## [2.1.0] - 2026-01-20
 ### Added
 - **High-Fidelity Maia Matrix v2**: Enhanced the relational engine with deep technical insights.

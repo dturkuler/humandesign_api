@@ -1,10 +1,9 @@
-from .. import features as hd
+import humandesign.features as hd
 from .. import hd_constants
-import pandas as pd
 import numpy as np
 from datetime import datetime
-from .geolocation import get_latitude_longitude
-from timezonefinder import TimezoneFinder
+from .geolocation import get_latitude_longitude, tf
+import swisseph as swe
 import pytz
 
 def sanitize_for_json(data):
@@ -100,7 +99,7 @@ def check_bridging(p_defined, combo_defined):
     try:
         if int(p_defined) > 1 and int(combo_defined) == 1:
             return True
-    except:
+    except Exception:
         pass
     return False
 
@@ -155,7 +154,7 @@ def get_profile_resonance(p1_profile_str, p2_profile_str):
         elif resonance_count == 1:
             return "Harmonic Resonance"
             
-    except:
+    except Exception:
         pass
     return "Neutral Partnership"
 
@@ -168,7 +167,7 @@ def get_node_resonance(p1_nodes, p2_nodes):
         common = p1_nodes.intersection(p2_nodes)
         if common:
             return f"Shared Environment ({len(common)} Node Resonance)"
-    except:
+    except Exception:
         pass
     return "Individual Environmental Paths"
 
@@ -221,14 +220,21 @@ def get_lunar_phase_flag(jd):
         res = swe.calc_ut(jd, swe.MOON)[0][0] # longitude
         sun_res = swe.calc_ut(jd, swe.SUN)[0][0]
         diff = (res - sun_res) % 360
-        if diff < 45: return "New Moon Phase (Initiation)"
-        if diff < 90: return "Waxing Crescent"
-        if diff < 135: return "First Quarter (Action)"
-        if diff < 180: return "Waxing Gibbous"
-        if diff < 225: return "Full Moon (Clarity)"
-        if diff < 270: return "Waning Gibbous"
-        if diff < 315: return "Third Quarter (Release)"
-    except:
+        if diff < 45:
+            return "New Moon Phase (Initiation)"
+        if diff < 90:
+            return "Waxing Crescent"
+        if diff < 135:
+            return "First Quarter (Action)"
+        if diff < 180:
+            return "Waxing Gibbous"
+        if diff < 225:
+            return "Full Moon (Clarity)"
+        if diff < 270:
+            return "Waning Gibbous"
+        if diff < 315:
+            return "Third Quarter (Release)"
+    except Exception:
         pass
     return "Neutral Lunar Cycle"
 
@@ -247,8 +253,14 @@ def process_person_data(name, data):
         hour = data["hour"]
         minute = data["minute"]
         
-        # Geocode
-        latitude, longitude = get_latitude_longitude(place)
+        # Geocode Bypass
+        # Check if lat/long are provided in input data
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        
+        if latitude is None or longitude is None:
+             latitude, longitude = get_latitude_longitude(place)
+             
         if latitude is None or longitude is None:
             raise ValueError(f"Could not geocode place: {place}")
 
@@ -256,7 +268,7 @@ def process_person_data(name, data):
         if "/" in place:
             zone = place
         else:
-            tf = TimezoneFinder()
+            # Use singleton tf from geolocation
             zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
         
         # Calculate UTC offset
@@ -265,15 +277,8 @@ def process_person_data(name, data):
         
         # HD Timestamp
         timestamp = (year, month, day, hour, minute, 0, int(hours_offset))
-        
-        # Julian Day for Lunar Context
-        # (Using a simple conversion or importing Julian utility if preferred, 
-        # but we can reuse hd_features logic if we instantiate it)
-        temp_instance = hd.hd_features(*timestamp)
-        jd = temp_instance.timestamp_to_juldate(timestamp)
-        lunar_phase = get_lunar_phase_flag(jd)
 
-        # Calculate HD Features
+        # Core Calculations
         hd_rawData = hd.calc_single_hd_features(timestamp, report=False, channel_meaning=True)
         hd_data = hd.unpack_single_features(hd_rawData)
         
@@ -354,17 +359,25 @@ def process_person_data(name, data):
         profile_desc = hd_constants.PROFILE_DB.get(profile_code, f"{profile_code[0]}/{profile_code[1]}")
 
         # Activation Matrix (High-Fidelity)
+        # 10x Enhancement: Added 'position' for explicit degrees
         activations_matrix = {}
         target_dict = hd_data["date_to_gate_dict"]
         for i in range(len(target_dict["gate"])):
             p_name = target_dict["planets"][i]
+            # Handle longitude: might be float or already formatted?
+            # Core.py `date_to_gate` returns `result_dict["lon"]` which are floats.
+            # We format it to string "DDD.ddd" or similar for API clarity.
+            lon_val = target_dict["lon"][i]
+            pos_str = f"{lon_val:.4f}"
+            
             activations_matrix[p_name] = {
                 "gate": int(target_dict["gate"][i]),
                 "line": int(target_dict["line"][i]),
                 "color": int(target_dict["color"][i]),
                 "tone": int(target_dict["tone"][i]),
                 "base": int(target_dict["base"][i]),
-                "planet": p_name
+                "planet": p_name,
+                "position": pos_str
             }
 
         person_details = {
@@ -384,12 +397,13 @@ def process_person_data(name, data):
             "defined_centers": defined_centers_names,
             "undefined_centers": undefined_centers_names,
             "definition": hd_constants.DEFINITION_DB.get(str(hd_data["definition"]), str(hd_data["definition"])),
-            "variables": hd_data.get("variables"),
-            "lunar_context": lunar_phase,
             "activations": activations_matrix,
-            "channels": channels_list
+            "channels": channels_list,
+            # 10x Enhancements (Tier 2)
+            "variables": hd_data.get("variables"),
+            "lunar_context": hd.get_lunar_phase(hd_data["date_to_gate_dict"])
         }
-        
+
         return timestamp, person_details
 
     except Exception as e:
@@ -405,7 +419,8 @@ def process_composite_matrix(persons_input):
     utc_birthdata_dict = {}
     
     for name, data in persons_input.items():
-        if hasattr(data, "dict"): data = data.dict()
+        if hasattr(data, "dict"):
+            data = data.dict()
         ts, details = process_person_data(name, data)
         if ts:
             processed_persons_dict[name] = ts
@@ -433,7 +448,8 @@ def process_maia_matrix(persons_input):
     person_definition_map = {}
     
     for name, data in persons_input.items():
-        if hasattr(data, "dict"): data = data.dict()
+        if hasattr(data, "dict"):
+            data = data.dict()
         ts, details = process_person_data(name, data)
         if ts:
             processed_persons_dict[name] = ts
@@ -453,13 +469,15 @@ def process_maia_matrix(persons_input):
             for i in range(len(raw_gates)):
                 g = int(raw_gates[i])
                 p_name = raw_planets[i]
-                if g not in gate_to_planet: gate_to_planet[g] = []
+                if g not in gate_to_planet:
+                    gate_to_planet[g] = []
                 gate_to_planet[g].append(p_name)
                 if p_name in ["North_Node", "South_Node"]:
                     nodes.add(g)
             
             person_gate_planet_map[name] = gate_to_planet
-            if 'full_activations' not in locals(): full_activations = {}
+            if 'full_activations' not in locals():
+                full_activations = {}
             full_activations[name] = details.get("activations", {})
             
             person_nodes_map[name] = nodes
@@ -502,7 +520,8 @@ def process_maia_matrix(persons_input):
                 c_key = tuple(sorted((g1, g2)))
                 c_type_short = hd_constants.circuit_typ_dict.get(c_key, "Unknown")
                 c_group = hd_constants.circuit_group_typ_dict.get(c_type_short, "Unknown")
-                if c_group in circuitry_counts: circuitry_counts[c_group] += 1
+                if c_group in circuitry_counts:
+                    circuitry_counts[c_group] += 1
                 
                 # Planetary Flavors
                 p1_triggers = person_gate_planet_map.get(p1_name, {}).get(g1, ["None"]) + \
@@ -568,3 +587,211 @@ def process_maia_matrix(persons_input):
             }
 
     return sanitize_for_json({"persons": utc_birthdata_dict, "combinations": combinations_list})
+
+def process_hybrid_analysis(participants, group_type="family", verbosity="all"):
+    """
+    Orchestrates Maia Matrix (Dyads) and Penta (Group) analysis.
+    Returns a dictionary suitable for HybridAnalysisResponse.
+    """
+    if len(participants) < 2:
+        raise ValueError("At least 2 participants are required for hybrid analysis.")
+
+    processed_persons_dict = {}
+    utc_birthdata_dict = {}
+    person_gates_map = {}
+    person_gate_planet_map = {}
+    person_nodes_map = {}
+    person_definition_map = {}
+    full_activations = {}
+
+    full_activations = {}
+
+    # 1. Concurrent Batch Process Person Data
+    # Using ThreadPoolExecutor to handle IO-bound operations (geocoding) in parallel
+    from concurrent.futures import ThreadPoolExecutor
+    
+    def _process_single_person(item):
+        name, data = item
+        if hasattr(data, "dict"):
+            data = data.dict()
+        try:
+             # Process
+             ts, details = process_person_data(name, data)
+             return name, ts, details
+        except Exception as e:
+             # Log and return None to be filtered out
+             print(f"Error processing {name}: {e}")
+             return name, None, None
+
+    with ThreadPoolExecutor() as executor:
+        results = list(executor.map(_process_single_person, participants.items()))
+
+    for name, ts, details in results:
+        if ts:
+            processed_persons_dict[name] = ts
+            utc_birthdata_dict[name] = details
+            
+            # Recalculate raw features for parity with process_maia_matrix maps
+            # This part is CPU bound, could be kept out of thread pool or moved in if preferred for full parallelism.
+            # Keeping it here for simplicity of shared state logic update.
+            hd_rawData = hd.calc_single_hd_features(ts, report=False, channel_meaning=True)
+            hd_unpacked = hd.unpack_single_features(hd_rawData)
+            
+            gates = set(hd_unpacked["date_to_gate_dict"]["gate"])
+            person_gates_map[name] = gates
+            person_definition_map[name] = hd_unpacked["definition"]
+             
+            # Maps
+            gate_to_planet = {}
+            nodes = set()
+            raw_gates = hd_unpacked["date_to_gate_dict"]["gate"]
+            raw_planets = hd_unpacked["date_to_gate_dict"]["planets"]
+            for i in range(len(raw_gates)):
+                g = int(raw_gates[i])
+                p_name = raw_planets[i]
+                if g not in gate_to_planet:
+                    gate_to_planet[g] = []
+                gate_to_planet[g].append(p_name)
+                if p_name in ["North_Node", "South_Node"]:
+                    nodes.add(g)
+            
+            person_gate_planet_map[name] = gate_to_planet
+            full_activations[name] = details.get("activations", {})
+            person_nodes_map[name] = nodes
+
+    # 2. Penta Dynamics (Group >= 3)
+    penta_dynamics = None
+    if len(processed_persons_dict) >= 3:
+        penta_dynamics = get_penta_dynamics(person_gates_map)
+    
+    # 3. Dyad Matrix (All Pairs)
+    dyad_matrix = []
+    if len(processed_persons_dict) >= 2:
+        result_df = hd.get_composite_combinations(processed_persons_dict)
+        raw_combinations = result_df.to_dict(orient="records")
+        
+        for combo in raw_combinations:
+            # Basic fixes
+            if "new_chakra" in combo and isinstance(combo["new_chakra"], list):
+                combo["new_chakra"] = [hd_constants.CHAKRA_NAMES_MAP.get(c, c) for c in combo["new_chakra"]]
+            
+            p1_name, p2_name = combo["id"], combo["other_person"]
+            
+            # Use 'partial' logic if verbosity is low? 
+            # Spec says: "all": Returns full details. "partial": Returns only high-level.
+            # However, for now request model demands generic structure. We will compute full and let endpoint filter?
+            # Or better, compute only what's needed.
+            # Schema requires 'dyad_matrix' to be List[CombinationItem]. CombinationItem requires all fields.
+            # So we must compute ALL fields to satisfy the schema, UNLESS schema has Optionals.
+            # Looking at response_models.py, CombinationItem fields are mostly required.
+            # So we MUST compute everything. The 'verbosity' flag might just be for the HTTP response model filtering 
+            # (response_model_exclude) or we might need to adjust the schema to allow partials.
+            # For now, we compute full.
+            
+            p1_gates = person_gates_map.get(p1_name, set())
+            p2_gates = person_gates_map.get(p2_name, set())
+            combined_gates = p1_gates.union(p2_gates)
+            
+            chakra_count = combo.get("chakra_count", 0)
+            connection_label = get_connection_classification(chakra_count)
+            combo["connection_code"] = connection_label
+            
+            new_channels = combo.get("new_channels", [])
+            ch_meanings = combo.get("new_ch_meaning", [])
+            
+            maia_details = []
+            circuitry_counts = {"Individual": 0, "Tribal": 0, "Collective": 0, "Integration": 0}
+            flavors = []
+            
+            for i, channel in enumerate(new_channels):
+                g1, g2 = channel
+                c_key = tuple(sorted((g1, g2)))
+                c_type_short = hd_constants.circuit_typ_dict.get(c_key, "Unknown")
+                c_group = hd_constants.circuit_group_typ_dict.get(c_type_short, "Unknown")
+                if c_group in circuitry_counts:
+                    circuitry_counts[c_group] += 1
+                
+                p1_triggers = person_gate_planet_map.get(p1_name, {}).get(g1, ["None"]) + \
+                              person_gate_planet_map.get(p1_name, {}).get(g2, ["None"])
+                p2_triggers = person_gate_planet_map.get(p2_name, {}).get(g1, ["None"]) + \
+                              person_gate_planet_map.get(p2_name, {}).get(g2, ["None"])
+                
+                p1_flavor = [t for t in p1_triggers if t != "None"]
+                p2_flavor = [t for t in p2_triggers if t != "None"]
+                flavors.append(f"{'/'.join(p1_flavor)}-{'/'.join(p2_flavor)}")
+                
+                # Active sub-line details
+                maia_activations = []
+                for p_name_act, act in full_activations.get(p1_name, {}).items():
+                    if act["gate"] in channel:
+                        maia_activations.append(act)
+                for p_name_act, act in full_activations.get(p2_name, {}).items():
+                    if act["gate"] in channel:
+                        maia_activations.append(act)
+
+                maia_details.append({
+                    "channel": channel,
+                    "meaning": ch_meanings[i] if i < len(ch_meanings) else "Unknown",
+                    "type": classify_maia_connection(p1_gates, p2_gates, channel),
+                    "circuitry": get_sub_circuit_detail(channel),
+                    "planetary_trigger": f"P1:{'/'.join(p1_flavor)} | P2:{'/'.join(p2_flavor)}",
+                    "activations": maia_activations
+                })
+            
+            combo["maia_details"] = maia_details
+            
+            # Synergy
+            p1_details = utc_birthdata_dict.get(p1_name, {})
+            p2_details = utc_birthdata_dict.get(p2_name, {})
+            
+            is_bridged = (person_definition_map.get(p1_name, "1") != "1" or person_definition_map.get(p2_name, "1") != "1") and chakra_count >= 8
+            
+            love_gates_list = [10, 15, 25, 46, 5, 2, 29]
+            active_love_gates = [g for g in love_gates_list if g in combined_gates]
+            
+            dynamics = calculate_center_dynamics(
+                p1_details.get("defined_centers", []),
+                p2_details.get("defined_centers", [])
+            )
+            space_count = list(dynamics.values()).count("open_window")
+            
+            combo["synergy"] = {
+                "thematic_label": connection_label,
+                "bridge_active": is_bridged,
+                "center_dynamics": dynamics,
+                "aura_dynamic": get_aura_dynamic(p1_details.get("energy_type"), p2_details.get("energy_type")),
+                "love_gate_highlights": active_love_gates,
+                "space_count": space_count,
+                "circuitry_dominant": max(circuitry_counts, key=circuitry_counts.get) if any(circuitry_counts.values()) else "None",
+                "profile_resonance": get_profile_resonance(p1_details.get("profile"), p2_details.get("profile")),
+                "node_resonance": get_node_resonance(person_nodes_map.get(p1_name, set()), person_nodes_map.get(p2_name, set())),
+                "dominant_sub_circuit": get_sub_circuit_detail(new_channels[0]) if new_channels else "Multiple/Neutral",
+                "planetary_flavor_summary": flavors[0] if flavors else "Neutral",
+                "group_dynamic_summary": f"Penta Structure ({len(processed_persons_dict)})" if penta_dynamics else f"Pairwise ({len(processed_persons_dict)})",
+                "penta_details": penta_dynamics # Include penta context in pair if relevant, though redundant
+            }
+            
+            dyad_matrix.append(combo)
+
+    # 4. Meta & Final Response (10x Enhancement)
+    from datetime import datetime
+    
+    # Get pyswisseph version if possible, or swisseph lib version
+    # swe.swe_version() might require path/args. swe.version() isn't standard function name in pyswisseph 2.x?
+    # Actually `swe` module from pyswisseph doesn't always expose version string easy.
+    # But `swe.swe_calc_ut` relies on underlying dll.
+    # We'll hardcode "pyswisseph" and dynamic timestamp for now or try-catch version.
+    ephemeris_ver = "SwissEph (pyswisseph)" 
+    
+    meta = {
+        "engine": "Maia-Penta v2.0",
+        "ephemeris": ephemeris_ver,
+        "timestamp": datetime.utcnow().isoformat() + "Z"
+    }
+
+    return sanitize_for_json({
+        "meta": meta,
+        "participants": utc_birthdata_dict,
+        "penta_dynamics": penta_dynamics,
+        "dyad_matrix": dyad_matrix
+    })

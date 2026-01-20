@@ -188,8 +188,10 @@ def enrich_transit_metadata(
             m_desc = ""
             current_meaning = b_meanings[i]
             if isinstance(current_meaning, (list, tuple)):
-                if len(current_meaning) > 0: m_name = current_meaning[0]
-                if len(current_meaning) > 1: m_desc = current_meaning[1]
+                if len(current_meaning) > 0:
+                    m_name = current_meaning[0]
+                if len(current_meaning) > 1:
+                    m_desc = current_meaning[1]
             
             channel_str = f"{g1}/{g2}: {m_name} ({m_desc})"
             birth_channels_formatted.append({"channel": channel_str})
@@ -276,17 +278,28 @@ def enrich_transit_metadata(
     
     # Zodiac Logic
     def get_zodiac(d, m):
-        if (m==3 and d>=21) or (m==4 and d<=19): return "Aries"
-        if (m==4 and d>=20) or (m==5 and d<=20): return "Taurus"
-        if (m==5 and d>=21) or (m==6 and d<=20): return "Gemini"
-        if (m==6 and d>=21) or (m==7 and d<=22): return "Cancer"
-        if (m==7 and d>=23) or (m==8 and d<=22): return "Leo"
-        if (m==8 and d>=23) or (m==9 and d<=22): return "Virgo"
-        if (m==9 and d>=23) or (m==10 and d<=22): return "Libra"
-        if (m==10 and d>=23) or (m==11 and d<=21): return "Scorpio"
-        if (m==11 and d>=22) or (m==12 and d<=21): return "Sagittarius"
-        if (m==12 and d>=22) or (m==1 and d<=19): return "Capricorn"
-        if (m==1 and d>=20) or (m==2 and d<=18): return "Aquarius"
+        if (m == 3 and d >= 21) or (m == 4 and d <= 19):
+            return "Aries"
+        if (m == 4 and d >= 20) or (m == 5 and d <= 20):
+            return "Taurus"
+        if (m == 5 and d >= 21) or (m == 6 and d <= 20):
+            return "Gemini"
+        if (m == 6 and d >= 21) or (m == 7 and d <= 22):
+            return "Cancer"
+        if (m == 7 and d >= 23) or (m == 8 and d <= 22):
+            return "Leo"
+        if (m == 8 and d >= 23) or (m == 9 and d <= 22):
+            return "Virgo"
+        if (m == 9 and d >= 23) or (m == 10 and d <= 22):
+            return "Libra"
+        if (m == 10 and d >= 23) or (m == 11 and d <= 21):
+            return "Scorpio"
+        if (m == 11 and d >= 22) or (m == 12 and d <= 21):
+            return "Sagittarius"
+        if (m == 12 and d >= 22) or (m == 1 and d <= 19):
+            return "Capricorn"
+        if (m == 1 and d >= 20) or (m == 2 and d <= 18):
+            return "Aquarius"
         return "Pisces"
     
     meta_object["zodiac_sign"] = get_zodiac(birth_timestamp[2], birth_timestamp[1])
@@ -310,7 +323,7 @@ def enrich_transit_metadata(
     meta_object["profile"] = f"{p_key}: {profile_names.get(p_key, '')}"
 
     # Map Composite Data
-    auth_code = composite_data.get("composite_authority")
+    composite_data.get("composite_authority")
     # auth_name = hd_constants.INNER_AUTHORITY_NAMES_MAP.get(auth_code, auth_code) # Not used in output structure of daily? 
     # Wait, daily output has composite_changes and planetary_transits seperately.
     

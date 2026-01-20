@@ -1,14 +1,11 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import matplotlib.path as mpath
-from matplotlib.colors import to_rgba
 import matplotlib.transforms
 from svgpath2mpl import parse_path
 import json
-import numpy as np
+import importlib.resources
 
 import io
-import os
 
 # --- 1. CONFIGURATION ---
 LAYOUT_FILE = "layout_data.json"
@@ -28,7 +25,6 @@ CANVAS_W = 240
 CANVAS_H = 320
 
 # --- Helper to load JSON layout ---
-import importlib.resources
 
 def load_json_layout():
     """
@@ -82,7 +78,8 @@ def draw_chart(chart_data, layout_data):
         gate_id = int(gate_id_str)
         
         path_d = geo_data.get('channel_path')
-        if not path_d: continue
+        if not path_d:
+            continue
         mpl_path = svg_to_mpl_path(path_d)
         
         # 1. Draw Inactive state (Gray Background)
@@ -117,24 +114,23 @@ def draw_chart(chart_data, layout_data):
     
     # Map generic names to XAML keys if needed. 
     # Standardize center names to match layout keys
-    name_map = {
-        "G_Center": "G",
-        "Anja": "Ajna"
-    }
     
     for name, data in centers_layout.items():
         # Determine if defined
         # Check mapped name in layout vs JSON
         json_name = name
         # Reverse map for checking definition
-        if name == "G": json_name = "G_Center"
+        if name == "G":
+            json_name = "G_Center"
         
         is_defined = json_name in defined_centers or name in defined_centers
         
         fill_c = COLOR_DEFINED if is_defined else COLOR_UNDEFINED
         stroke_c = "gold" if is_defined else "gray" # Matches XAML style roughly
-        if not is_defined: stroke_c = "gray"
-        else: stroke_c = "#B8860B" # DarkGoldenRod for better visibility than 'Gold'
+        if not is_defined:
+            stroke_c = "gray"
+        else:
+            stroke_c = "#B8860B" # DarkGoldenRod for better visibility than 'Gold'
         
         z_order = 10
         
@@ -176,7 +172,6 @@ def draw_chart(chart_data, layout_data):
         # XAML Gate Template uses a small Ellipse 6.5x6.5
         # We'll draw a small circle
         
-        circle_color = "gainsboro" if is_active else "none" 
         # Highlight active gates
         
         if is_active:

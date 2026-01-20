@@ -2,7 +2,6 @@ from .. import hd_constants
 import swisseph  as swe  
 from IPython.display import display
 import pandas as pd
-import numpy as np
 import itertools
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -10,7 +9,6 @@ from datetime import datetime
 from pytz import timezone
 from multiprocessing import Pool
 from tqdm.contrib.concurrent import process_map
-from tqdm import tqdm
 import sys
 from .attributes import (
     get_inc_cross,
@@ -34,7 +32,6 @@ def get_utc_offset_from_tz(timestamp,zone):
         hours(float): offset hours (decimal hours e.g. 0.75 for 45 min)
     """
     country = timezone(zone)
-    fmt = '%Y-%m-%d %H:%M:%S %Z%z'
     tz_offset = country.localize(datetime(*timestamp)).utcoffset().total_seconds()
     hours = tz_offset/3600
     return hours
@@ -348,20 +345,20 @@ def calc_single_hd_features(timestamp,report=False,channel_meaning=False,day_cha
             variables = get_variables(date_to_gate_dict)
             bdate="{}".format(timestamp[:-2])
             cdate="{}".format(instance.create_date)
-            if report == True:
+            if report:
                 print("birth date: "+ bdate)
                 print("create date: " + cdate)
                 print("energy-type: {}".format(typ))
                 print("inner authority: {}".format(auth))
                 print("inc. cross: {}".format(inc_cross))
-                print("profile: {}/{}".format( *profile, sep='/'))
+                print("profile: {}/{}".format( *profile, ))
                 print("active chakras: {}".format(active_chakras))
                 print("definition: {}".format(definition))
                 print("variables: {}".format(variables))
                 display(pd.DataFrame(date_to_gate_dict))
                 display(pd.DataFrame(active_channels_dict))
          
-    if day_chart_only==False:
+    if not day_chart_only:
         return  typ,auth,inc_cross,inc_cross_typ,profile,definition,date_to_gate_dict,active_chakras,active_channels_dict, bdate, cdate, variables
     else:
         return date_to_gate_dict
@@ -500,7 +497,7 @@ def unpack_mult_features(result,full=True):
                                     for i in range(len(return_dict["date_to_gate_dict"]))]
         return_dict["line_list"] = [return_dict["date_to_gate_dict"][i]["line"] 
                                     for i in range(len(return_dict["date_to_gate_dict"]))]
-        return_dict["lon_list"] = line_list = [return_dict["date_to_gate_dict"][i]["lon"] 
+        return_dict["lon_list"] = [return_dict["date_to_gate_dict"][i]["lon"] 
                                     for i in range (len(return_dict["date_to_gate_dict"]))]
         return_dict["color_list"] = [return_dict["date_to_gate_dict"][i]["color"] 
                                     for i in range (len(return_dict["date_to_gate_dict"]))]
@@ -717,8 +714,10 @@ def get_penta(participants_data, group_type="family"):
             
             if is_active:
                 metrics["total_channels"] += 1
-                if zone_key == "upper_penta": metrics["upper_active"] += 1
-                if zone_key == "lower_penta": metrics["lower_active"] += 1
+                if zone_key == "upper_penta":
+                    metrics["upper_active"] += 1
+                if zone_key == "lower_penta":
+                    metrics["lower_active"] += 1
                 
                 if ch_key in score_channels_backbone:
                     active_backbone_count += 1
@@ -765,11 +764,13 @@ def get_penta(participants_data, group_type="family"):
                 
                 # Bottlenecks (DOM)
                 if type_code == "DOM":
-                    for d in drivers: metrics["bottlenecks"].add(d)
+                    for d in drivers:
+                        metrics["bottlenecks"].add(d)
 
             else:
                 # Inactive
-                if ch_key in score_channels_backbone: metrics["backbone_status"][ch_key] = "Missing"
+                if ch_key in score_channels_backbone:
+                    metrics["backbone_status"][ch_key] = "Missing"
                 
                 missing_gates = []
                 missing_skills = []

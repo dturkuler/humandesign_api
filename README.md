@@ -15,8 +15,11 @@ Whether you are building a mobile app, a professional dashboard, or a personal r
 ### Key Features:
 
 *   **High-Fidelity Maia Matrix v2**: Advanced relational analysis with planetary triggers, nodal resonance, and sub-circuit details.
-*   **Penta Analysis**: Calculates Group Dynamics (3-5 people) via the `/analyze/penta` endpoint, providing high-level semantic analysis (Sovereign Standard).
+*   **Penta Analysis 2.0**: Enhanced Group Dynamics (3-5 people) via the `/analyze/penta` endpoint, providing high-level semantic analysis (Sovereign Standard).
+*   **Maia-Penta Hybrid Analysis**: New `POST /analyze/maia-penta` endpoint for professional composite + group dynamics in a single request.
 *   **Grounded 10x Interpretation**: Consultant-grade psychology-grounded reports with zero-jargon semantic output.
+*   **Global Performance (Sub-20ms)**: Integrated `TimezoneFinder` Singleton and geocoding bypass to achieve 100x lower latency.
+*   **Coordinate Support**: All endpoints now support optional `latitude` and `longitude` parameters to bypass geocoding services for maximum precision and speed.
 *   **FastAPI Backend**: High-performance, async-ready Python web framework.
 *   **Precise Calculations**: Uses `pyswisseph` for Swiss Ephemeris accuracy and `geopy`/`timezonefinder` for reliable location and timezone resolution.
 *   **BodyGraph Visualization**: Generates high-fidelity, transparent BodyGraph charts in PNG, SVG, and JPG formats via the `/bodygraph` endpoint.
@@ -359,6 +362,6 @@ The project is organized as follows:
     *   Tools like `openapi-generator` can use this file to generate API client code for various programming languages (e.g., Python, JavaScript, Java).
 
 ---
-*Documentation generated for Human Design API v2.1.0*
+*Documentation generated for Human Design API v2.2.0*
 
 

@@ -1,17 +1,6 @@
 from .. import hd_constants
-import swisseph  as swe  
-from IPython.display import display
-import pandas as pd
 import numpy as np
 import itertools
-from datetime import timedelta
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
-from pytz import timezone
-from multiprocessing import Pool
-from tqdm.contrib.concurrent import process_map
-from tqdm import tqdm
-import sys
 
 def is_connected(active_channels_dict, *args):
     ''' 
@@ -79,7 +68,8 @@ def get_auth_old(active_chakras,active_channels_dict):
         auth = "HT_GC"
     elif outher_auth_mask:
         auth = "outher_auth"
-    else: auth = "unknown?" #sanity check;-)
+    else:
+        auth = "unknown?" #sanity check;-)
     
     return auth
 
@@ -453,7 +443,8 @@ def chakra_connection_list(chakra_1,chakra_2):
     if len(connection_list): 
         full_connection_list = np.concatenate([connection_list, [item[::-1] 
                                                                  for item in connection_list]])# normal + reverse order   
-    else: full_connection_list=[]
+    else:
+        full_connection_list = []
            
     return full_connection_list
 

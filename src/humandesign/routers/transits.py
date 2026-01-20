@@ -1,8 +1,9 @@
+from typing import Optional
 from fastapi import APIRouter, Query, HTTPException, Depends
-from timezonefinder import TimezoneFinder
+# from timezonefinder import TimezoneFinder # Removed
 from .. import features as hd
 from .. import hd_constants
-from ..services.geolocation import get_latitude_longitude
+from ..services.geolocation import get_latitude_longitude, tf
 from ..dependencies import verify_token
 from ..utils.calculations import process_transit_data, enrich_transit_metadata
 
@@ -18,17 +19,21 @@ def get_solar_return(
     second: int = Query(0, description="Birth second (optional, default 0)"),
     place: str = Query("Kirikkale, Turkey", description="Birth place (city, country)"),
     sr_year_offset: int = Query(0, description="Years to add to birth year. 0 = Birth Year, 1 = 1st Birthday (1969), 58 = 2026 Birthday."),
+    latitude: Optional[float] = Query(None, description="Optional latitude for birth place"),
+    longitude: Optional[float] = Query(None, description="Optional longitude for birth place"),
     authorized: bool = Depends(verify_token)
 ):
     # Geocoding and timezone logic
-    latitude, longitude = get_latitude_longitude(place)
+    if latitude is None or longitude is None:
+        latitude, longitude = get_latitude_longitude(place)
+        
     if latitude is None or longitude is None:
         raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'")
     
     if "/" in place:
         zone = place
     else:
-        tf = TimezoneFinder()
+        # Use singleton
         zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
     birth_time = (year, month, day, hour, minute, second)
     hours = hd.get_utc_offset_from_tz(birth_time, zone)
@@ -78,17 +83,25 @@ def get_daily_transit(
     transit_day: int = Query(10, description="Transit day to analyze"),
     transit_hour: int = Query(12, description="Transit hour (local time at calculation place, default 12)"),
     transit_minute: int = Query(0, description="Transit minute (default 0)"),
+    latitude: Optional[float] = Query(None, description="Optional latitude for birth place"),
+    longitude: Optional[float] = Query(None, description="Optional longitude for birth place"),
+    current_latitude: Optional[float] = Query(None, description="Optional latitude for current place"),
+    current_longitude: Optional[float] = Query(None, description="Optional longitude for current place"),
     authorized: bool = Depends(verify_token)
 ):
     # 1. Process Birth Data (remains constant)
-    b_lat, b_lon = get_latitude_longitude(place)
+    if latitude is None or longitude is None:
+        b_lat, b_lon = get_latitude_longitude(place)
+    else:
+        b_lat, b_lon = latitude, longitude
+        
     if b_lat is None or b_lon is None:
         raise HTTPException(status_code=400, detail=f"Geocoding failed for birth place: '{place}'")
     
-    tf = TimezoneFinder()
     if "/" in place:
         b_zone = place
     else:
+        # Use singleton
         b_zone = tf.timezone_at(lat=b_lat, lng=b_lon) or 'Etc/UTC'
     
     birth_time = (year, month, day, hour, minute, second)
@@ -100,13 +113,18 @@ def get_daily_transit(
     
     if current_place:
         # Geocode current place
-        c_lat, c_lon = get_latitude_longitude(calculation_place)
+        if current_latitude is None or current_longitude is None:
+            c_lat, c_lon = get_latitude_longitude(calculation_place)
+        else:
+            c_lat, c_lon = current_latitude, current_longitude
+            
         if c_lat is None or c_lon is None:
              raise HTTPException(status_code=400, detail=f"Geocoding failed for current place: '{calculation_place}'")
         
         if "/" in calculation_place:
             c_zone = calculation_place
         else:
+            # Use singleton
             c_zone = tf.timezone_at(lat=c_lat, lng=c_lon) or 'Etc/UTC'
     else:
         # Re-use birth place info
@@ -184,8 +202,10 @@ def get_daily_transit(
             m_desc = ""
             current_meaning = b_meanings[i]
             if isinstance(current_meaning, (list, tuple)):
-                if len(current_meaning) > 0: m_name = current_meaning[0]
-                if len(current_meaning) > 1: m_desc = current_meaning[1]
+                if len(current_meaning) > 0:
+                    m_name = current_meaning[0]
+                if len(current_meaning) > 1:
+                    m_desc = current_meaning[1]
             
             # Format: "Gate/Gate: Name (Desc)"
             # Note: User example showed "6/59: The Channel of Mating (A Design Focused on Reproduction)"
@@ -277,17 +297,28 @@ def get_daily_transit(
     
     # --- Zodiac Logic (Mini helper) ---
     def get_zodiac(d, m):
-        if (m==3 and d>=21) or (m==4 and d<=19): return "Aries"
-        if (m==4 and d>=20) or (m==5 and d<=20): return "Taurus"
-        if (m==5 and d>=21) or (m==6 and d<=20): return "Gemini"
-        if (m==6 and d>=21) or (m==7 and d<=22): return "Cancer"
-        if (m==7 and d>=23) or (m==8 and d<=22): return "Leo"
-        if (m==8 and d>=23) or (m==9 and d<=22): return "Virgo"
-        if (m==9 and d>=23) or (m==10 and d<=22): return "Libra"
-        if (m==10 and d>=23) or (m==11 and d<=21): return "Scorpio"
-        if (m==11 and d>=22) or (m==12 and d<=21): return "Sagittarius"
-        if (m==12 and d>=22) or (m==1 and d<=19): return "Capricorn"
-        if (m==1 and d>=20) or (m==2 and d<=18): return "Aquarius"
+        if (m == 3 and d >= 21) or (m == 4 and d <= 19):
+            return "Aries"
+        if (m == 4 and d >= 20) or (m == 5 and d <= 20):
+            return "Taurus"
+        if (m == 5 and d >= 21) or (m == 6 and d <= 20):
+            return "Gemini"
+        if (m == 6 and d >= 21) or (m == 7 and d <= 22):
+            return "Cancer"
+        if (m == 7 and d >= 23) or (m == 8 and d <= 22):
+            return "Leo"
+        if (m == 8 and d >= 23) or (m == 9 and d <= 22):
+            return "Virgo"
+        if (m == 9 and d >= 23) or (m == 10 and d <= 22):
+            return "Libra"
+        if (m == 10 and d >= 23) or (m == 11 and d <= 21):
+            return "Scorpio"
+        if (m == 11 and d >= 22) or (m == 12 and d <= 21):
+            return "Sagittarius"
+        if (m == 12 and d >= 22) or (m == 1 and d <= 19):
+            return "Capricorn"
+        if (m == 1 and d >= 20) or (m == 2 and d <= 18):
+            return "Aquarius"
         return "Pisces"
     
     meta_object["zodiac_sign"] = get_zodiac(day, month)
@@ -317,7 +348,7 @@ def get_daily_transit(
     
     # Map Authority (Composite)
     auth_code = composite_data.get("composite_authority")
-    auth_name = hd_constants.INNER_AUTHORITY_NAMES_MAP.get(auth_code, auth_code)
+    hd_constants.INNER_AUTHORITY_NAMES_MAP.get(auth_code, auth_code)
 
     # Map Centers (Composite)
     raw_centers = composite_data.get("new_defined_centers", [])

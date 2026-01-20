@@ -1,7 +1,13 @@
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, Tuple, List
 from dataclasses import dataclass
+from timezonefinder import TimezoneFinder
+
+# Singleton instance
+# in_memory=True ensures the binary file is loaded once into RAM (20-30MB) 
+# and not re-read from disk on every lookup.
+tf = TimezoneFinder(in_memory=True)
 
 @dataclass
 class Location:
@@ -29,7 +35,7 @@ def get_latitude_longitude(place: str) -> Tuple[Optional[float], Optional[float]
         location = geolocator.geocode(place, timeout=2) # Shorter timeout
         if location:
             return location.latitude, location.longitude
-    except:
+    except Exception:
         pass
     return None, None
 
@@ -39,7 +45,7 @@ def get_address(latitude: float, longitude: float) -> Optional[str]:
     try:
         location = geolocator.reverse((latitude, longitude))
         return location.address if location else None
-    except:
+    except Exception:
         return None
 
 def batch_geocode(places: List[str]) -> List[Location]:

@@ -1,13 +1,14 @@
+from typing import Optional
 from fastapi import APIRouter, Query, HTTPException, Depends
 from fastapi.responses import JSONResponse, Response
-from timezonefinder import TimezoneFinder
+# from timezonefinder import TimezoneFinder # Removed
 import json
 
 from .. import features as hd
 from .. import hd_constants
 from ..utils import serialization as cj
 from ..services import chart_renderer as chart
-from ..services.geolocation import get_latitude_longitude
+from ..services.geolocation import get_latitude_longitude, tf
 from ..dependencies import verify_token
 from ..utils.date_utils import clean_birth_date_to_iso, clean_create_date_to_iso
 from ..schemas.general import HealthResponse
@@ -40,6 +41,8 @@ def calculate_hd(
     place: str = Query("Kirikkale, Turkey", description="Birth place (city, country)"),
     gender: str = Query("male", description="Gender (optional)"),
     islive: bool = Query(True, description="Whether the person is still alive (True) or deceased (False)"),
+    latitude: Optional[float] = Query(None, description="Optional latitude for birth place"),
+    longitude: Optional[float] = Query(None, description="Optional longitude for birth place"),
     authorized: bool = Depends(verify_token)
 ):
     # 1. Validate and collect input
@@ -47,12 +50,15 @@ def calculate_hd(
 
     # 2. Geocode and timezone
     try:
-        latitude, longitude = get_latitude_longitude(place)
+        # Use provided coordinates if available, otherwise geocode
+        if latitude is None or longitude is None:
+            latitude, longitude = get_latitude_longitude(place)
+            
         if latitude is not None and longitude is not None:
             if "/" in place:
                 zone = place
             else:
-                tf = TimezoneFinder()
+                # Use singleton
                 zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
         else:
             raise HTTPException(status_code=400, detail=f"Geocoding failed for place: '{place}'. Please check the place name or try a different format.")
@@ -127,6 +133,8 @@ def get_bodygraph_image(
     second: int = Query(0, description="Birth second (optional, default 0)"),
     place: str = Query("Kirikkale, Turkey", description="Birth place (city, country)"),
     fmt: str = Query("png", description="Image format: png, svg, jpg/jpeg"),
+    latitude: Optional[float] = Query(None, description="Optional latitude for birth place"),
+    longitude: Optional[float] = Query(None, description="Optional longitude for birth place"),
     authorized: bool = Depends(verify_token)
 ):
     # 1. Validate and collect input
@@ -134,9 +142,12 @@ def get_bodygraph_image(
 
     # 2. Geocode and timezone
     try:
-        latitude, longitude = get_latitude_longitude(place)
+        # Use provided coordinates if available, otherwise geocode
+        if latitude is None or longitude is None:
+            latitude, longitude = get_latitude_longitude(place)
+            
         if latitude is not None and longitude is not None:
-            tf = TimezoneFinder()
+            # Use singleton
             zone = tf.timezone_at(lat=latitude, lng=longitude)
             if not zone:
                 zone = 'Etc/UTC'

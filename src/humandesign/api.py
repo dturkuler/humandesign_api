@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-import tomllib
-import os
 from .routers import general, transits, composite
 
 # --- Read version from importlib.metadata ---

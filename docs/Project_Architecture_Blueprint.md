@@ -1,7 +1,7 @@
 # Project Architecture Blueprint
 
-**Generated:** 2026-01-19
-**Version:** 2.0.0
+**Generated:** 2026-01-20
+**Version:** 2.2.0
 **Project:** Human Design API
 
 ## 1. Architecture Detection and Analysis
@@ -34,9 +34,9 @@ The **Human Design API** is designed as a stateless, high-performance calculatio
 ### A. API Layer (`src/humandesign/routers/`)
 -   **Purpose:** Handles HTTP requests, input validation, and response formatting.
 -   **Components:**
-    -   `general.py`: Core endpoints (`/calculate`, `/bodygraph`, `/health`).
-    -   `transits.py`: Temporal analysis (`/transits/daily`, `/transits/solar_return`).
-    -   `composite.py`: Multi-person analysis (`/analyze/composite`, `/analyze/penta`).
+    -   `general.py`: Core endpoints (`/calculate`, `/bodygraph`, `/health`). Supports optional `latitude`/`longitude` for bypass.
+    -   `transits.py`: Temporal analysis (`/transits/daily`, `/transits/solar_return`). Supports optional coordinates.
+    -   `composite.py`: Multi-person analysis (`/analyze/composite`, `/analyze/penta`, `/analyze/maia-penta`).
 -   **Pattern:** FastAPI Routers using Pydantic schemas for validation.
 
 ### B. Feature Engine (`src/humandesign/features/`)
@@ -70,7 +70,8 @@ The **Human Design API** is designed as a stateless, high-performance calculatio
 5.  **Feature Logic:** `features/core.py` transforms positions into Gate/Line/Tone activations.
 6.  **Mechanics:** `mechanics.py` determines Centers, Channels, and Authority.
 7.  **Semantic Mapping:** V2 logic applies `hd_constants` maps (Family vs Business) to enrich output.
-8.  **Output:** Structured JSON is returned to the client.
+8.  **Hybrid Orchestration:** `maia-penta` track combines relativistic triggers with group dynamic gaps.
+9.  **Output:** Structured JSON is returned to the client.
 
 ## 5. Cross-Cutting Concerns
 
@@ -85,6 +86,10 @@ The **Human Design API** is designed as a stateless, high-performance calculatio
 -   **Context Switching:** Logic in `get_penta_v2` dynamically swaps lookup tables (`FAMILY_Skills` vs `BUSINESS_Skills`) based on `group_type`.
 -   **Functional Roles:** Iterates active channels to map participants to functional outputs (`Implementation`, `Planning`).
 -   **Line Semantics:** Applies specialized `PENTA_LINE_KEYWORD_MAP` to translate raw line numbers (1-6) into operational styles (e.g., "Authoritarian").
+
+**Tier 3 Performance Scaling:**
+-   **Singleton Patterns:** `TimezoneFinder` is instantiated once globally to prevent high-latency re-load cycles.
+-   **Geocoding Bypass:** Strategic injection of (Lat, Lon) parameters to circumvent external service dependencies and Nominatim rate-limits.
 
 ## 7. Deployment Architecture
 

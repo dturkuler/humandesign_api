@@ -1,16 +1,75 @@
 from fastapi import APIRouter, Body, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from typing import Dict
-from timezonefinder import TimezoneFinder
+# from timezonefinder import TimezoneFinder # Removed
 from .. import features as hd
 from .. import hd_constants
-from ..services.geolocation import get_latitude_longitude
+from ..services.geolocation import get_latitude_longitude, tf
 from ..dependencies import verify_token
-from ..schemas.input_models import PersonInput, PentaRequest
-from ..schemas.response_models import CompMatrixResponse
-from ..services.composite import process_composite_matrix, process_maia_matrix
+from ..schemas.input_models import PersonInput, PentaRequest, HybridAnalysisRequest
+from ..schemas.response_models import CompMatrixResponse, HybridAnalysisResponse
+from ..services.composite import process_composite_matrix, process_maia_matrix, process_hybrid_analysis
 
 router = APIRouter()
+
+@router.post("/analyze/maia-penta", response_model=HybridAnalysisResponse)
+def get_hybrid_analysis(
+    request: HybridAnalysisRequest = Body(
+        ...,
+        examples=[{
+            "group_type": "family",
+            "verbosity": "all",
+            "participants": {
+                 "person1": {
+                    "place": "Berlin, Germany",
+                    "year": 1985,
+                    "month": 6,
+                    "day": 15,
+                    "hour": 14,
+                    "minute": 30
+                },
+                 "person2": {
+                    "place": "New York, USA",
+                    "year": 1980,
+                    "month": 2,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 15
+                },
+                 "person3": {
+                    "place": "London, UK",
+                    "year": 1990,
+                    "month": 12,
+                    "day": 5,
+                    "hour": 18,
+                    "minute": 45
+                }
+            }
+        }],
+        description="Unified endpoint for Family Harmony (Maia Matrix + Penta Dynamics)."
+    ),
+    authorized: bool = Depends(verify_token)
+):
+    """
+    Calculate Hybrid Analysis: pairwise Matrix dynamics AND holistic Penta group analysis.
+    """
+    # 1. Validation Logic
+    if len(request.participants) < 2:
+         raise HTTPException(status_code=400, detail="At least 2 participants are required.")
+
+    # 2. Process via Service
+    try:
+        result = process_hybrid_analysis(
+            participants=request.participants,
+            group_type=request.group_type,
+            verbosity=request.verbosity
+        )
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing hybrid analysis: {str(e)}")
+
+    return JSONResponse(content=result)
 
 @router.post("/analyze/compmatrix")
 def get_composite_matrix(
@@ -140,7 +199,7 @@ def analyze_composite(
             if "/" in p_input.place:
                 zone = p_input.place
             else:
-                tf = TimezoneFinder()
+                # Use singleton
                 zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
             
             birth_time = (p_input.year, p_input.month, p_input.day, p_input.hour, p_input.minute, 0)
@@ -251,7 +310,7 @@ def analyze_penta(
             if "/" in p_input.place:
                 zone = p_input.place
             else:
-                tf = TimezoneFinder()
+                # Use singleton
                 zone = tf.timezone_at(lat=latitude, lng=longitude) or 'Etc/UTC'
             
             birth_time = (p_input.year, p_input.month, p_input.day, p_input.hour, p_input.minute, 0)
