@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .routers import general, transits, composite
+from .routers.v2 import general as general_v2
 
 # --- Read version from importlib.metadata ---
 import importlib.metadata
@@ -21,6 +22,7 @@ app = FastAPI(title="Human Design API", version=__version__)
 app.include_router(general.router)
 app.include_router(transits.router)
 app.include_router(composite.router)
+app.include_router(general_v2.router)
 
 if __name__ == "__main__":
     import uvicorn
