@@ -48,11 +48,22 @@ class EnrichmentService:
         """
         Recursively enrich the response structure. Supports both dicts and Pydantic models.
         """
-        is_model = hasattr(response_data, "personality_gates")
+        # Check if gates are nested or top-level
+        if hasattr(response_data, "gates") and response_data.gates:
+            # V2 structure with nested gates
+            gates_obj = response_data.gates
+            gate_collections = [
+                ("personality", getattr(gates_obj, "personality", {})),
+                ("design", getattr(gates_obj, "design", {}))
+            ]
+        else:
+            # Fallback for old structure
+            gate_collections = [
+                ("personality_gates", getattr(response_data, "personality_gates", {})),
+                ("design_gates", getattr(response_data, "design_gates", {}))
+            ]
         
-        for gate_key in ["personality_gates", "design_gates"]:
-            gates = getattr(response_data, gate_key) if is_model else response_data.get(gate_key)
-            
+        for gate_key, gates in gate_collections:
             if gates:
                 # Handle both dict of models and dict of dicts
                 iterator = gates.items() if hasattr(gates, "items") else gates

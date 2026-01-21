@@ -34,6 +34,10 @@ class CentersV2(BaseModel):
     defined: List[str]
     undefined: List[str]
 
+class GatesV2(BaseModel):
+    personality: Dict[str, 'GateV2']
+    design: Dict[str, 'GateV2']
+
 class GeneralSectionV2(BaseModel):
     birth_date: str
     create_date: str
@@ -84,8 +88,7 @@ class CalculateResponseV2(BaseModel):
     general: Optional[GeneralSectionV2] = None
     centers: Optional[CentersV2] = None
     variables: Optional[VariablesV2] = None
+    gates: Optional[GatesV2] = None
     channels: Optional[List[Dict[str, Any]]] = None
-    personality_gates: Optional[Dict[str, GateV2]] = None
-    design_gates: Optional[Dict[str, GateV2]] = None
     mechanics: Optional[Dict[str, Any]] = None
     advanced: Optional[AdvancedSectionV2] = None

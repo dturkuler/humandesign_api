@@ -8,7 +8,7 @@ from ...utils import serialization as cj
 from ...services.geolocation import get_latitude_longitude, tf
 from ...dependencies import verify_token
 from ...utils.date_utils import clean_birth_date_to_iso, clean_create_date_to_iso
-from ...schemas.v2.calculate import CalculateRequestV2, CalculateResponseV2, GeneralSectionV2, GateV2, AdvancedSectionV2, CentersV2
+from ...schemas.v2.calculate import CalculateRequestV2, CalculateResponseV2, GeneralSectionV2, GateV2, AdvancedSectionV2, CentersV2, GatesV2
 from ...services.masking import OutputMaskingService
 
 router = APIRouter(prefix="/v2", tags=["v2"])
@@ -173,9 +173,8 @@ def calculate_hd_v2(
             general=GeneralSectionV2(**general_data),
             centers=CentersV2(**centers_data),
             variables=single_result[11],
+            gates=GatesV2(personality=pers_gates, design=dest_gates),
             channels=channels_v2,
-            personality_gates=pers_gates,
-            design_gates=dest_gates,
             mechanics=None,
             advanced=None
         )
@@ -194,22 +193,30 @@ def calculate_hd_v2(
         dream_engine = DreamRaveEngine()
         cycle_engine = GlobalCycleEngine()
         
-        # Prepare data for Dream Rave (using simple set of gate numbers)
-        all_active_gates = set()
-        for v in enriched_response.personality_gates.values():
-            all_active_gates.add(v.gate)
-        for v in enriched_response.design_gates.values():
-            all_active_gates.add(v.gate)
+        # Collect all active gates from both personality and design
+        all_gates = set()
+        if enriched_response.gates:
+            for planet, gate_obj in enriched_response.gates.personality.items():
+                all_gates.add(gate_obj.gate)
+            for planet, gate_obj in enriched_response.gates.design.items():
+                all_gates.add(gate_obj.gate)
         
-        dream_out = dream_engine.analyze(all_active_gates)
+        dream_rave_output = dream_engine.analyze(all_gates)
         
-        # Calculate date for Global Cycles
-        calc_date = date(request.year, request.month, request.day)
-        cycle_out = cycle_engine.get_cycle(calc_date)
+        # Get birth date for global cycle
+        birth_date_str = general_data["birth_date"]
+        birth_year = int(birth_date_str[:4])
+        birth_month = int(birth_date_str[5:7])
+        birth_day = int(birth_date_str[8:10])
+        birth_date_obj = date(birth_year, birth_month, birth_day)
         
+        global_cycle_output = cycle_engine.get_cycle(birth_date_obj)
+        
+        # Update response with advanced mechanics
+        from ...schemas.v2.calculate import AdvancedSectionV2
         enriched_response.advanced = AdvancedSectionV2(
-            dream_rave=dream_out,
-            global_cycle=cycle_out
+            dream_rave=dream_rave_output,
+            global_cycle=global_cycle_output
         )
 
         # --- Output Masking ---

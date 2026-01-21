@@ -35,8 +35,9 @@ def test_v2_calculate_verbose_default():
     assert response.status_code == 200
     data = response.json()
     assert "general" in data
-    assert "personality_gates" in data
-    assert "design_gates" in data
+    assert "gates" in data
+    assert "personality" in data["gates"]
+    assert "design" in data["gates"]
     assert "channels" in data
     # V2 is verbose by default, so advanced should be present
     assert "advanced" in data
@@ -52,21 +53,19 @@ def test_v2_calculate_include_masking():
     assert response.status_code == 200
     data = response.json()
     assert "general" in data
-    assert "personality_gates" not in data
-    assert "design_gates" not in data
+    assert "gates" not in data
     assert "channels" not in data
 
 def test_v2_calculate_exclude_masking():
     """Verify V2 respects the 'exclude' filter."""
     body = TEST_BODY.copy()
-    body["exclude"] = ["personality_gates", "design_gates", "channels", "mechanics", "advanced"]
+    body["exclude"] = ["gates", "channels", "mechanics", "advanced"]
     
     response = client.post("/v2/calculate", json=body)
     assert response.status_code == 200
     data = response.json()
     assert "general" in data
-    assert "personality_gates" not in data
-    assert "design_gates" not in data
+    assert "gates" not in data
     assert "channels" not in data
 
 def test_v2_calculate_invalid_json():

@@ -21,8 +21,8 @@ def test_v2_calculate_enriched_labels():
     assert response.status_code == 200
     data = response.json()
     
-    # Check Sun Gate in personality_gates
-    sun_gate = data["personality_gates"]["Sun"]
+    # Check Sun Gate in personality gates
+    sun_gate = data["gates"]["personality"]["Sun"]
     assert sun_gate["gate_name"] is not None
     assert "Abundance" in sun_gate["gate_name"] or sun_gate["gate_name"] != ""
     assert sun_gate["line_name"] is not None
@@ -34,19 +34,22 @@ def test_v2_calculate_fixation_heuristic():
     data = response.json()
     
     # Check heuristic logic presence in both sections
-    assert "personality_gates" in data
-    assert "design_gates" in data
+    assert "gates" in data
+    assert "personality" in data["gates"]
+    assert "design" in data["gates"]
 
 def test_v2_calculate_masking_with_enrichment():
     """Verify that masking works on enriched fields."""
     body = TEST_BODY.copy()
-    body["include"] = ["personality_gates"]
+    body["include"] = ["gates"]
     
     response = client.post("/v2/calculate", json=body)
     assert response.status_code == 200
     data = response.json()
     
-    assert "personality_gates" in data
+    # Only gates section should be present
+    assert "gates" in data
     assert "general" not in data
-    assert "design_gates" not in data
-    assert data["personality_gates"]["Sun"]["gate_name"] is not None
+    
+    # Verify enrichment is still applied
+    assert data["gates"]["personality"]["Sun"]["gate_name"] is not None
