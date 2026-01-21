@@ -35,8 +35,6 @@ Thumbs.db
 .backup/
 # docs
 .docs/
-# Conductor
-conductor/
 # reports
 .coverage
 .coverage.*
