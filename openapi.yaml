@@ -1333,28 +1333,46 @@ components:
           type: string
         birth_place:
           type: string
-          type: string
-        active_chakras:
-          type: array
-          items:
-            type: string
-        inactive_chakras:
-          type: array
-          items:
-            type: string
-        definition:
-          type: string
-        variables:
-          $ref: '#/components/schemas/VariablesV2'
         age:
           type: integer
-        zodiac_sign:
-          type: string
         gender:
           type: string
         islive:
           type: boolean
+        zodiac_sign:
+          type: string
+        energy_type:
+          type: string
+        strategy:
+          type: string
+        signature:
+          type: string
+        not_self:
+          type: string
+        aura:
+          type: string
+        inner_authority:
+          type: string
+        inc_cross:
+          type: string
+        profile:
+          type: string
+        definition:
+          type: string
       title: GeneralSectionV2
+
+    CentersV2:
+      type: object
+      properties:
+        defined:
+          type: array
+          items:
+            type: string
+        undefined:
+          type: array
+          items:
+            type: string
+      title: CentersV2
 
     VariablesV2:
       type: object
@@ -1383,6 +1401,19 @@ components:
         def_type:
           type: string
       title: VariableItemV2
+
+    GatesV2:
+      type: object
+      properties:
+        personality:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GateV2'
+        design:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GateV2'
+      title: GatesV2
 
     GateV2:
       type: object
@@ -1415,6 +1446,45 @@ components:
           type: object
           nullable: true
       title: GateV2
+
+    AdvancedSectionV2:
+      type: object
+      properties:
+        dream_rave:
+          $ref: '#/components/schemas/DreamRaveOutput'
+        global_cycle:
+          $ref: '#/components/schemas/GlobalCycleOutput'
+      title: AdvancedSectionV2
+
+    DreamRaveOutput:
+      type: object
+      properties:
+        activated_centers:
+          type: array
+          items:
+            type: string
+        activated_gates:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
+      title: DreamRaveOutput
+
+    GlobalCycleOutput:
+      type: object
+      properties:
+        great_cycle:
+          type: string
+        cycle_cross:
+          type: string
+        gates:
+          type: array
+          items:
+            type: integer
+        description:
+          type: string
+      title: GlobalCycleOutput
 
   securitySchemes:
     HTTPBearer:
