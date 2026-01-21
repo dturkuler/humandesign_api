@@ -172,9 +172,9 @@ def calculate_hd_v2(
         full_response = CalculateResponseV2(
             general=GeneralSectionV2(**general_data),
             centers=CentersV2(**centers_data),
+            channels=channels_v2,
             variables=single_result[11],
             gates=GatesV2(personality=pers_gates, design=dest_gates),
-            channels=channels_v2,
             mechanics=None,
             advanced=None
         )

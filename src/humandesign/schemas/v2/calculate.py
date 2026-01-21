@@ -87,8 +87,8 @@ class AdvancedSectionV2(BaseModel):
 class CalculateResponseV2(BaseModel):
     general: Optional[GeneralSectionV2] = None
     centers: Optional[CentersV2] = None
+    channels: Optional[List[Dict[str, Any]]] = None
     variables: Optional[VariablesV2] = None
     gates: Optional[GatesV2] = None
-    channels: Optional[List[Dict[str, Any]]] = None
     mechanics: Optional[Dict[str, Any]] = None
     advanced: Optional[AdvancedSectionV2] = None
