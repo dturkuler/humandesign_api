@@ -2,13 +2,13 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, EmailStr
 
 class CalculateRequestV2(BaseModel):
-    year: int = Field(..., description="Birth year")
-    month: int = Field(..., description="Birth month")
-    day: int = Field(..., description="Birth day")
-    hour: int = Field(..., description="Birth hour")
-    minute: int = Field(..., description="Birth minute")
+    year: int = Field(1968, description="Birth year")
+    month: int = Field(2, description="Birth month")
+    day: int = Field(21, description="Birth day")
+    hour: int = Field(11, description="Birth hour")
+    minute: int = Field(0, description="Birth minute")
     second: int = Field(0, description="Birth second")
-    place: str = Field(..., description="Birth place")
+    place: str = Field("Kirikkale, Turkey", description="Birth place")
     gender: Optional[str] = Field("male", description="Gender")
     islive: Optional[bool] = Field(True, description="Whether alive")
     latitude: Optional[float] = None
@@ -64,5 +64,6 @@ class CalculateResponseV2(BaseModel):
     general: Optional[GeneralSectionV2] = None
     mechanics: Optional[Dict[str, Any]] = None # To be populated in Phase 2
     advanced: Optional[Dict[str, Any]] = None # To be populated in Phase 3
-    gates: Optional[Dict[str, GateV2]] = None
+    personality_gates: Optional[Dict[str, GateV2]] = None
+    design_gates: Optional[Dict[str, GateV2]] = None
     channels: Optional[List[Dict[str, Any]]] = None

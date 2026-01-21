@@ -79,9 +79,27 @@ def calculate_hd_v2(
         
         # Build Gates Section
         raw_gates = single_result[6]
-        gates_v2 = {}
-        for i, p_name in enumerate(raw_gates['planets']):
-            gates_v2[p_name] = GateV2(
+        pers_gates = {}
+        dest_gates = {}
+        
+        # In single_result[6], first 13 are Personality ('prs'), next 13 are Design ('des')
+        planet_list = raw_gates['planets']
+        half = len(planet_list) // 2
+        
+        for i in range(half):
+            p_name = planet_list[i]
+            pers_gates[p_name] = GateV2(
+                gate=raw_gates['gate'][i],
+                line=raw_gates['line'][i],
+                color=raw_gates['color'][i],
+                tone=raw_gates['tone'][i],
+                base=raw_gates['base'][i],
+                lon=raw_gates['lon'][i]
+            )
+            
+        for i in range(half, len(planet_list)):
+            p_name = planet_list[i]
+            dest_gates[p_name] = GateV2(
                 gate=raw_gates['gate'][i],
                 line=raw_gates['line'][i],
                 color=raw_gates['color'][i],
@@ -97,7 +115,8 @@ def calculate_hd_v2(
         # Construct Full Response (Unmasked)
         full_response = {
             "general": general_data,
-            "gates": gates_v2,
+            "personality_gates": pers_gates,
+            "design_gates": dest_gates,
             "channels": channels_v2,
             "mechanics": None, # Placeholder for Phase 2
             "advanced": None   # Placeholder for Phase 3

@@ -48,22 +48,23 @@ class EnrichmentService:
         """
         Recursively enrich the response structure.
         """
-        if "gates" in response_data and response_data["gates"]:
-            for planet, gate_data in response_data["gates"].items():
-                if isinstance(gate_data, dict):
-                    enriched = self.enrich_gate(
-                        gate_data.get("gate"), 
-                        gate_data.get("line"),
-                        planet
-                    )
-                    gate_data.update(enriched)
-                else:
-                    # If it's a Pydantic model (pre-serialization)
-                    enriched = self.enrich_gate(gate_data.gate, gate_data.line, planet)
-                    gate_data.gate_name = enriched.get("gate_name")
-                    gate_data.gate_summary = enriched.get("gate_summary")
-                    gate_data.line_name = enriched.get("line_name")
-                    gate_data.line_description = enriched.get("line_description")
-                    gate_data.fixation = enriched.get("fixation")
+        for gate_key in ["personality_gates", "design_gates"]:
+            if gate_key in response_data and response_data[gate_key]:
+                for planet, gate_data in response_data[gate_key].items():
+                    if isinstance(gate_data, dict):
+                        enriched = self.enrich_gate(
+                            gate_data.get("gate"), 
+                            gate_data.get("line"),
+                            planet
+                        )
+                        gate_data.update(enriched)
+                    else:
+                        # If it's a Pydantic model
+                        enriched = self.enrich_gate(gate_data.gate, gate_data.line, planet)
+                        gate_data.gate_name = enriched.get("gate_name")
+                        gate_data.gate_summary = enriched.get("gate_summary")
+                        gate_data.line_name = enriched.get("line_name")
+                        gate_data.line_description = enriched.get("line_description")
+                        gate_data.fixation = enriched.get("fixation")
                     
         return response_data
