@@ -14,8 +14,8 @@ class CalculateRequestV2(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     
-    include: Optional[List[str]] = Field(None, description="Sections to include (e.g. ['general', 'mechanics'])")
-    exclude: Optional[List[str]] = Field(None, description="Sections to exclude")
+    include: Optional[List[str]] = Field(None, description="Sections to include (e.g. ['general', 'personality_gates'])", example=["general", "personality_gates"])
+    exclude: Optional[List[str]] = Field(None, description="Sections to exclude", example=["channels"])
 
 class VariableItemV2(BaseModel):
     value: str
