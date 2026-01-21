@@ -38,9 +38,10 @@ def test_v2_calculate_verbose_default():
     assert "personality_gates" in data
     assert "design_gates" in data
     assert "channels" in data
-    # mechanics and advanced are excluded because they are None
+    # V2 is verbose by default, so advanced should be present
+    assert "advanced" in data
+    # mechanics is excluded because it is None
     assert "mechanics" not in data
-    assert "advanced" not in data
 
 def test_v2_calculate_include_masking():
     """Verify V2 respects the 'include' filter."""
