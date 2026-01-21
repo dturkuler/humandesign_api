@@ -49,3 +49,7 @@ htmlcov/
 
 .tobedeleted/
 .ruff_cache/
+
+# reports
+reports/
+.gitignore
