@@ -8,7 +8,7 @@ from ...utils import serialization as cj
 from ...services.geolocation import get_latitude_longitude, tf
 from ...dependencies import verify_token
 from ...utils.date_utils import clean_birth_date_to_iso, clean_create_date_to_iso
-from ...schemas.v2.calculate import CalculateRequestV2, CalculateResponseV2, GeneralSectionV2, GateV2, AdvancedSectionV2
+from ...schemas.v2.calculate import CalculateRequestV2, CalculateResponseV2, GeneralSectionV2, GateV2, AdvancedSectionV2, CentersV2
 from ...services.masking import OutputMaskingService
 
 router = APIRouter(prefix="/v2", tags=["v2"])
@@ -93,27 +93,44 @@ def calculate_hd_v2(
         }
         authority_full = authority_map.get(single_result[1], single_result[1])
         
+        # Get full incarnation cross name
+        cross_tuple = single_result[2]  # Format: ((gate1, gate2), (gate3, gate4))-TYPE
+        cross_type = single_result[3]  # RAC, LAC, or JC
+        
+        # Parse the cross to get the sun gate
+        import re
+        match = re.match(r"\(\((\d+), (\d+)\), \((\d+), (\d+)\)\)-(.+)", str(cross_tuple))
+        if match:
+            sun_gate = int(match.group(1))
+            cross_abbr = match.group(5)
+            cross_full = hd_constants.CROSS_DB.get(sun_gate, {}).get(cross_abbr, str(cross_tuple))
+        else:
+            cross_full = str(cross_tuple)
+        
         # Build General Section
         general_data = {
             "birth_date": clean_birth_date_to_iso(single_result[9], hours),
             "create_date": clean_create_date_to_iso(single_result[10]),
             "birth_place": request.place,
+            "age": age,
+            "gender": request.gender or "male",
+            "islive": request.islive if request.islive is not None else True,
+            "zodiac_sign": zodiac_sign,
             "energy_type": single_result[0],
             "strategy": type_details["strategy"],
             "signature": type_details["signature"],
             "not_self": type_details["not_self"],
             "aura": type_details["aura"],
             "inner_authority": authority_full,
-            "inc_cross": f"{single_result[2]}",
+            "inc_cross": cross_full,
             "profile": profile_full,
-            "defined_centers": defined_centers,
-            "undefined_centers": undefined_centers,
-            "definition": definition_full,
-            "variables": single_result[11],
-            "age": age,
-            "zodiac_sign": zodiac_sign,
-            "gender": request.gender or "male",
-            "islive": request.islive if request.islive is not None else True
+            "definition": definition_full
+        }
+        
+        # Build Centers Section
+        centers_data = {
+            "defined": defined_centers,
+            "undefined": undefined_centers
         }
         
         # Build Gates Section
@@ -154,11 +171,13 @@ def calculate_hd_v2(
         # Construct Full Response (Unmasked)
         full_response = CalculateResponseV2(
             general=GeneralSectionV2(**general_data),
+            centers=CentersV2(**centers_data),
+            variables=single_result[11],
+            channels=channels_v2,
             personality_gates=pers_gates,
             design_gates=dest_gates,
-            channels=channels_v2,
-            mechanics=None, # Placeholder for Phase 2
-            advanced=None   # Placeholder for Phase 3
+            mechanics=None,
+            advanced=None
         )
         
         # Apply Enrichment
