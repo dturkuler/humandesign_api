@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [3.3.1] - 2026-01-22
+### Fixed
+- **Docker Build**: Removed `*.sqlite` from `.dockerignore` to ensure the required `hd_data.sqlite` database is included in the Docker image.
+- **Configuration**: Updated `.gitignore` to force-track `.dockerignore` changes.
+
 ## [3.3.0] - 2026-01-21
 ### Added
 - **V2 Calculate API (10x Upgrade)**: Launched the high-fidelity `POST /v2/calculate` endpoint.

@@ -17,7 +17,7 @@ venv/
 *.sublime-workspace
 
 # Docker
-.dockerignore
+
 docker-compose.override.yml
 *.swp
 *.swo
