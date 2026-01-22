@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Human Design API
-  version: 3.3.1
+  version: 3.3.2
 paths:
   /calculate:
     get:

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [Unreleased]
+ 
+## [3.3.2] - 2026-01-22
+### Fixed
+- **V2 Geocoding**: Fixed an edge case in `POST /v2/calculate` where explicit `0.0` coordinates were failing to trigger reverse geocoding fallback.
+- **Test Parity**: Updated version assertion tests to align with `pyproject.toml` as the single source of truth.
+
 ## [3.3.1] - 2026-01-22
 ### Fixed
 - **Docker Build**: Removed `*.sqlite` from `.dockerignore` to ensure the required `hd_data.sqlite` database is included in the Docker image.
