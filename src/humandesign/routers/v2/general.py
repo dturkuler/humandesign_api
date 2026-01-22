@@ -24,7 +24,8 @@ def calculate_hd_v2(
     # 2. Geocode and timezone
     try:
         latitude, longitude = request.latitude, request.longitude
-        if latitude is None or longitude is None:
+        # If coordinates are None or default (0,0), and we have a place name, trigger geocoding
+        if (latitude is None or longitude is None) or (latitude == 0.0 and longitude == 0.0):
             latitude, longitude = get_latitude_longitude(request.place)
             
         if latitude is not None and longitude is not None:
