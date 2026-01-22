@@ -18,43 +18,43 @@ class CalculateRequestV2(BaseModel):
     exclude: Optional[List[str]] = Field(None, description="Sections to exclude", example=["channels"])
 
 class VariableItemV2(BaseModel):
-    value: str
-    name: str
-    aspect: str
-    def_type: str
+    value: Optional[str] = None
+    name: Optional[str] = None
+    aspect: Optional[str] = None
+    def_type: Optional[str] = None
 
 class VariablesV2(BaseModel):
-    top_right: VariableItemV2
-    bottom_right: VariableItemV2
-    top_left: VariableItemV2
-    bottom_left: VariableItemV2
-    short_code: str
+    top_right: Optional[VariableItemV2] = None
+    bottom_right: Optional[VariableItemV2] = None
+    top_left: Optional[VariableItemV2] = None
+    bottom_left: Optional[VariableItemV2] = None
+    short_code: Optional[str] = None
 
 class CentersV2(BaseModel):
-    defined: List[str]
-    undefined: List[str]
+    defined: Optional[List[str]] = None
+    undefined: Optional[List[str]] = None
 
 class GatesV2(BaseModel):
-    personality: Dict[str, 'GateV2']
-    design: Dict[str, 'GateV2']
+    personality: Optional[Dict[str, 'GateV2']] = None
+    design: Optional[Dict[str, 'GateV2']] = None
 
 class GeneralSectionV2(BaseModel):
-    birth_date: str
-    create_date: str
-    birth_place: str
-    age: int
-    gender: str
-    islive: bool
-    zodiac_sign: str
-    energy_type: str
-    strategy: str
-    signature: str
-    not_self: str
-    aura: str
-    inner_authority: str
-    inc_cross: str
-    profile: str
-    definition: str
+    birth_date: Optional[str] = None
+    create_date: Optional[str] = None
+    birth_place: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    islive: Optional[bool] = None
+    zodiac_sign: Optional[str] = None
+    energy_type: Optional[str] = None
+    strategy: Optional[str] = None
+    signature: Optional[str] = None
+    not_self: Optional[str] = None
+    aura: Optional[str] = None
+    inner_authority: Optional[str] = None
+    inc_cross: Optional[str] = None
+    profile: Optional[str] = None
+    definition: Optional[str] = None
 
 class GateV2(BaseModel):
     gate: int

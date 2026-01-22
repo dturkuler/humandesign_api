@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
- 
+### Added
+- **Recursive Masking**: Upgraded `OutputMaskingService` to support dot-notation for nested fields in `include` and `exclude` parameters (e.g., `["gates.profile", "general.birth_place"]`).
+
 ## [3.3.2] - 2026-01-22
 ### Fixed
 - **V2 Geocoding**: Fixed an edge case in `POST /v2/calculate` where explicit `0.0` coordinates were failing to trigger reverse geocoding fallback.
