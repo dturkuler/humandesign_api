@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [3.4.0] - 2026-01-22
 ### Added
 - **Recursive Masking**: Upgraded `OutputMaskingService` to support dot-notation for nested fields in `include` and `exclude` parameters (e.g., `["gates.profile", "general.birth_place"]`).
 
