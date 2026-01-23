@@ -1492,3 +1492,4 @@ components:
     HTTPBearer:
       type: http
       scheme: bearer
+
