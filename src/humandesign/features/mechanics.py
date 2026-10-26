@@ -161,20 +161,23 @@ def get_typ(active_channels_dict, active_chakras):
     )
 
     # --- 2. CHECK HEART (HT) TO THROAT (TT) ---
-    # Checks path: Direct (21-45), Via G-Center, or Via Spleen
+    # Direct (21-45), via G-Center/Spleen, or via both non-motor centers.
     TT_HT_isconnected = (
         is_connected(active_channels_dict, "TT", "HT")               # Direct (e.g., 21-45)
         | is_connected(active_channels_dict, "TT", "GC", "HT")       # Via G-Center
         | is_connected(active_channels_dict, "TT", "SN", "HT")       # Via Spleen
+        | is_connected(active_channels_dict, "TT", "GC", "SN", "HT")
+        | is_connected(active_channels_dict, "TT", "SN", "GC", "HT")
     )
 
     # --- 3. CHECK SACRAL (SL) TO THROAT (TT) ---
-    # [FIX APPLIED HERE]
-    # Previous code only checked via G-Center ("TT","GC","SL").
-    # We now add the direct check ("TT","SL") for channel 20-34.
+    # Direct (20-34), via G-Center/Spleen, or via both non-motor centers.
     TT_SL_isconnected = (
         is_connected(active_channels_dict, "TT", "GC", "SL")         # Via G-Center
         | is_connected(active_channels_dict, "TT", "SL")             # Direct (Channel 20-34)
+        | is_connected(active_channels_dict, "TT", "SN", "SL")
+        | is_connected(active_channels_dict, "TT", "GC", "SN", "SL")
+        | is_connected(active_channels_dict, "TT", "SN", "GC", "SL")
     )
 
     # --- 4. CHECK ANY MOTOR TO THROAT ---

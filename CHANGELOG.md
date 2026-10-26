@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
- 
+
+### Fixed
+- **Energy Type**: Recognize all five previously omitted indirect motor-to-Throat paths through the Spleen and G Center. Charts with these connections now correctly resolve to Manifesting Generator or Manifestor. Regression tests cover all 13 paths to the first motor, including every concrete channel realization and reversed channel orientation.
 
 ## [4.0.2] - 2026-08-16
 ### Fixed
