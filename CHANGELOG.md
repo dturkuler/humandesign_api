@@ -6,11 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-
 ## [Unreleased]
 
+## [4.0.3] - 2026-10-27
+
 ### Fixed
-- **Energy Type**: Recognize all five previously omitted indirect motor-to-Throat paths through the Spleen and G Center. Charts with these connections now correctly resolve to Manifesting Generator or Manifestor. Regression tests cover all 13 paths to the first motor, including every concrete channel realization and reversed channel orientation.
+**Energy Type**: Recognize all five previously omitted indirect motor-to-Throat paths through the Spleen and G Center. Charts with these connections now correctly resolve to Manifesting Generator or Manifestor. Regression tests cover all 13 paths to the first motor, including every concrete channel realization and reversed channel orientation.
+- Recognized 5 missing indirect motor-to-throat routes in `get_typ()`:
+  - Throat -> Spleen -> Sacral (`TT` -> `SN` -> `SL`)
+  - Throat -> G -> Spleen -> Sacral (`TT` -> `GC` -> `SN` -> `SL`)
+  - Throat -> Spleen -> G -> Sacral (`TT` -> `SN` -> `GC` -> `SL`)
+  - Throat -> G -> Spleen -> Heart (`TT` -> `GC` -> `SN` -> `HT`)
+  - Throat -> Spleen -> G -> Heart (`TT` -> `SN` -> `GC` -> `HT`)
+- Fixed misclassifications of Manifesting Generators as Generators and Manifestors as Projectors for charts with indirect motor-to-throat channel connections (e.g., complete channels 27–50 and 20–57). (fixed by  maikschneekoenig-sys)
 
 ## [4.0.2] - 2026-08-16
 ### Fixed
