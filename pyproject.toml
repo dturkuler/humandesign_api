@@ -1,6 +1,6 @@
 [project]
 name = "humandesign-api"
-version = "4.0.2"
+version = "4.0.3"
 description = "Human Design API"
 authors = [
     {name = "Dogan Turkuler", email = "dogan.turkuler@gmail.com"}
