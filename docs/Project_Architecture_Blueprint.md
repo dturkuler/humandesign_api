@@ -1,7 +1,7 @@
 # Project Architecture Blueprint
 
-**Generated:** 2026-04-22
-**Version:** 4.0.2 "Sovereign"
+**Generated:** 2026-10-27
+**Version:** 4.0.3 "Sovereign"
 **Project:** Human Design API
 
 ## 1. Architecture Detection and Analysis
@@ -45,7 +45,7 @@ The **Human Design API (v4.0.0)** is a high-fidelity calculation and interpretat
 -   **Purpose:** Domain logic and heavy Rave calculations.
 -   **Key Components:**
     -   `core.py`: Orchestrates complex multi-participant analysis.
-    -   `mechanics.py`: Standard HD rules hierarchy (Authority, Centers, Definition).
+    -   `mechanics.py`: Standard HD rules hierarchy (Authority, Centers, Definition, 13 motor-to-throat pathways for Energy Type classification).
     -   `attributes.py`: Static mappings for Gates, Channels, and Variables.
 
 ### C. Service Layer (`src/humandesign/services/`)
@@ -99,4 +99,4 @@ v4.0.0 introduces a strict dual-licensing implementation:
 4.  Update `docs/API_DOCUMENTATION.md` and regenerate this blueprint.
 
 ---
-*Blueprint automatically updated for Version 4.0.0 "Sovereign" Release.*
+*Blueprint automatically updated for Version 4.0.3 "Sovereign" Release.*

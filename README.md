@@ -6,7 +6,7 @@
 
 🔮⚡ High-fidelity Human Design calculation engine — birth-chart analytics, BodyGraph visualization, and Group/Penta dynamics via a FastAPI service.
 
-[![Version](https://img.shields.io/badge/version-4.0.2-blue.svg)](https://github.com/dturkuler/humandesign_api/releases/tag/v4.0.2)
+[![Version](https://img.shields.io/badge/version-4.0.3-blue.svg)](https://github.com/dturkuler/humandesign_api/releases/tag/v4.0.3)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE-AGPL)
 [![Commercial License](https://img.shields.io/badge/License-Commercial-green.svg)](mailto:dogan.turkuler@gmail.com)
 [![Docker](https://img.shields.io/badge/docker-dturkuler%2Fhumandesign__api-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/dturkuler/humandesign_api)
@@ -292,4 +292,4 @@ Contributions are welcome. Please open an issue or pull request on [GitHub](http
 
 ---
 
-*Documentation generated for Human Design API v4.0.2*
+*Documentation generated for Human Design API v4.0.3*
